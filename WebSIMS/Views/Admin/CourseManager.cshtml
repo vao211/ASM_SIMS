@@ -5,66 +5,123 @@
     ViewData["Title"] = "Course Manager";
 }
 
-<h2>Course Manager</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMS - Course Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="bg-blue-700 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">SIMS - Course Manager</h1>
+            <nav class="flex items-center space-x-4">
+                <a href="@Url.Action("Index", "Dashboard")" class="hover:underline">Dashboard</a>
+                <a href="#" class="hover:underline">Profile</a>
+                <a href="#" class="hover:underline">Logout</a>
+            </nav>
+        </div>
+    </header>
 
-<div class="container">
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">@TempData["Error"]</div>
-    }
-    @if (TempData["Notification"] != null)
-    {
-        <div class="alert alert-success">@TempData["Notification"]</div>
-    }
+    <!-- Main Layout -->
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="bg-gray-800 text-white w-64 p-4">
+            <nav class="space-y-2">
+                <a href="@Url.Action("Index", "Dashboard")" class="block p-2 rounded-md hover:bg-gray-700">Dashboard</a>
+                <a href="#" class="block p-2 rounded-md hover:bg-gray-700 bg-gray-900">Courses</a>
+                <a href="#" class="block p-2 rounded-md hover:bg-gray-700">Students</a>
+                <a href="#" class="block p-2 rounded-md hover:bg-gray-700">Settings</a>
+            </nav>
+        </aside>
 
-    @if (Model.Courses != null && Model.Courses.Any())
-    {
-        foreach (var course in Model.Courses)
-        {
-            <h3>@course.Name</h3>
-            <p><strong>Lecturer:</strong> @course.LecturerName</p>
-            
-            @if (course.Students != null && course.Students.Any())
-            {
-                <table class="table table-striped mt-2" border="1px">
-                    <thead>
-                        <tr>
-                            <th>Student ID</th>
-                            <th>Student Name</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var student in course.Students)
-                        {
-                            <tr>
-                                <td>@student.Id</td>
-                                <td>@student.Name</td>
-                                <td>
-                                    <form asp-action="RemoveStudentFromCourse" method="post" style="display:inline;" 
-                                          onsubmit="return confirm('Are you sure you want to remove this student from the course?');">
-                                        <input type="hidden" name="studentId" value="@student.Id" />
-                                        <input type="hidden" name="courseId" value="@course.Id" />
-                                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <p class="mt-2">No students enrolled in this course.</p>
-            }
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800">Course Manager</h2>
 
-            <a href="@Url.Action("EditCourse", "Admin", new { id = course.Id })" class="btn btn-primary btn-sm mb-3">Edit Course</a>
-        }
-    }
-    else
-    {
-        <p class="mt-4">No courses found.</p>
-    }
+                <!-- Notifications -->
+                @if (TempData["Error"] != null)
+                {
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md">
+                        @TempData["Error"]
+                    </div>
+                }
+                @if (TempData["Notification"] != null)
+                {
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md">
+                        @TempData["Notification"]
+                    </div>
+                }
 
-    <a href="@Url.Action("Index", "Dashboard")" class="btn btn-secondary">Back to Dashboard</a>
-</div>
+                <!-- Course List -->
+                @if (Model.Courses != null && Model.Courses.Any())
+                {
+                    foreach (var course in Model.Courses)
+                    {
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">@course.Name</h3>
+                            <p class="text-gray-600"><strong>Lecturer:</strong> @course.LecturerName</p>
+                            
+                            @if (course.Students != null && course.Students.Any())
+                            {
+                                <table class="w-full border-collapse mt-4 bg-gray-50 rounded-md">
+                                    <thead>
+                                        <tr class="bg-gray-200">
+                                            <th class="p-3 text-left text-sm font-medium text-gray-700">Student ID</th>
+                                            <th class="p-3 text-left text-sm font-medium text-gray-700">Student Name</th>
+                                            <th class="p-3 text-left text-sm font-medium text-gray-700">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var student in course.Students)
+                                        {
+                                            <tr class="hover:bg-gray-100">
+                                                <td class="p-3 border-t">@student.Id</td>
+                                                <td class="p-3 border-t">@student.Name</td>
+                                                <td class="p-3 border-t">
+                                                    <form asp-action="RemoveStudentFromCourse" method="post" style="display:inline;" 
+                                                          onsubmit="return confirm('Are you sure you want to remove this student from the course?');">
+                                                        <input type="hidden" name="studentId" value="@student.Id" />
+                                                        <input type="hidden" name="courseId" value="@course.Id" />
+                                                        <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm">Remove</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <p class="mt-4 text-gray-600">No students enrolled in this course.</p>
+                            }
+
+                            <a href="@Url.Action("EditCourse", "Admin", new { id = course.Id })" class="inline-block mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm">Edit Course</a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="mt-6 text-gray-600">No courses found.</p>
+                }
+
+                <a href="@Url.Action("Index", "Dashboard")" class="inline-block mt-6 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Back to Dashboard</a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-4 text-center">
+        <p>&copy; 2025 SIMS. All rights reserved.</p>
+    </footer>
+
+    <!-- ASP.NET Core Client-Side Validation Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

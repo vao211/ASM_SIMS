@@ -1,28 +1,85 @@
 ﻿@model WebSIMS.Models.ViewModels.AssignStudentToCourseViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
-<h2>Assign Student</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMS - Assign Student to Course</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="bg-blue-700 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">SIMS - Assign Student</h1>
+            <nav class="flex items-center space-x-4">
+                <a href="@Url.Action("Index", "Dashboard")" class="hover:underline">Dashboard</a>
+                <a href="#" class="hover:underline">Profile</a>
+                <a href="#" class="hover:underline">Logout</a>
+            </nav>
+        </div>
+    </header>
 
-@if (TempData["Notification"] != null)
-{
-    <div class="alert alert-success">@TempData["Notification"]</div>
-}
+    <!-- Main Layout -->
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="bg-gray-800 text-white w-64 p-4">
+            <nav class="space-y-2">
+                <a href="@Url.Action("Index", "Dashboard")" class="block p-2 rounded-md hover:bg-gray-700">Dashboard</a>
+                <a href="#" class="block p-2 rounded-md hover:bg-gray-700 bg-gray-900">Students</a>
+                <a href="#" class="block p-2 rounded-md hover:bg-gray-700">Reports</a>
+                <a href="#" class="block p-2 rounded-md hover:bg-gray-700">Settings</a>
+            </nav>
+        </aside>
 
-<form asp-action="AssignStudentToCourse" method="post">
-    <div class="form-group">
-        <label asp-for="StudentId">Students</label>
-        <select asp-for="StudentId" asp-items="@Model.StudentsList" class="form-control">
-            <option value="">Select student</option>
-        </select>
-        <span asp-validation-for="StudentId" class="text-danger"></span>
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800">Assign Student to Course</h2>
+
+                <!-- Notification -->
+                @if (TempData["Notification"] != null)
+                {
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md">
+                        @TempData["Notification"]
+                    </div>
+                }
+
+                <!-- Form -->
+                <form asp-action="AssignStudentToCourse" method="post" class="space-y-6">
+                    <div class="form-group">
+                        <label asp-for="StudentId" class="block text-sm font-medium text-gray-700 mb-1">Students</label>
+                        <select asp-for="StudentId" asp-items="@Model.StudentsList" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select student</option>
+                        </select>
+                        <span asp-validation-for="StudentId" class="text-red-500 text-sm mt-1"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CourseId" class="block text-sm font-medium text-gray-700 mb-1">Courses</label>
+                        <select asp-for="CourseId" asp-items="@Model.CoursesList" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select course</option>
+                        </select>
+                        <span asp-validation-for="CourseId" class="text-red-500 text-sm mt-1"></span>
+                    </div>
+                    <div class="flex justify-end space-x-4">
+                        <a href="@Url.Action("Index", "Dashboard")" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Back</a>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Assign</button>
+                    </div>
+                </form>
+            </div>
+        </main>
     </div>
-    <div class="form-group">
-        <label asp-for="CourseId">Courses</label>
-        <select asp-for="CourseId" asp-items="@Model.CoursesList" class="form-control">
-            <option value="">Select course</option>
-        </select>
-        <span asp-validation-for="CourseId" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Assign</button>
-</form>
-<a href="@Url.Action("Index", "Dashboard")">Back</a>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-4 text-center">
+        <p>&copy; 2025 SIMS. All rights reserved.</p>
+    </footer>
+
+    <!-- ASP.NET Core Client-Side Validation Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

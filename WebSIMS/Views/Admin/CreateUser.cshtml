@@ -5,61 +5,112 @@
     ViewData["Title"] = "Create User";
 }
 
-<h2>Create User</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMS - Create User</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="bg-blue-700 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">SIMS - Create User</h1>
+            <nav class="flex items-center space-x-4">
+                <a href="@Url.Action("Index", "Dashboard")" class="hover:underline">Dashboard</a>
+                <a href="#" class="hover:underline">Profile</a>
+                <a href="#" class="hover:underline">Logout</a>
+            </nav>
+        </div>
+    </header>
 
-@if (TempData["SuccessNotification"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessNotification"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
+    <!-- Main Layout -->
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="bg-gray-800 text-white w-64 p-4">
+            <nav class="space-y-2">
+                <a href="@Url.Action("Index", "Dashboard")" class="block p-2 rounded-md hover:bg-gray-700">Dashboard</a>
+                <a href="@Url.Action("CourseManager", "Admin")" class="block p-2 rounded-md hover:bg-gray-700">Courses</a>
+                <a href="#" class="block p-2 rounded-md hover:bg-gray-700 bg-gray-900">Users</a>
+                <a href="#" class="block p-2 rounded-md hover:bg-gray-700">Settings</a>
+            </nav>
+        </aside>
 
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <ul>
-            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-            {
-                <li>@error.ErrorMessage</li>
-            }
-        </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800">Create User</h2>
 
-<form asp-action="CreateUser" method="post">
-    <div class="form-group mb-3">
-        <label asp-for="Name" class="control-label"></label>
-        <input name="Name" class="form-control"/>
-        <span asp-validation-for="Name" class="text-danger"></span>
+                <!-- Notifications -->
+                @if (TempData["SuccessNotification"] != null)
+                {
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["SuccessNotification"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul class="list-disc pl-5">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <!-- Form -->
+                <form asp-action="CreateUser" method="post" class="space-y-6">
+                    <div class="form-group">
+                        <label asp-for="Name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input name="Name" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <span asp-validation-for="Name" class="text-red-500 text-sm mt-1"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input name="Email" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <span asp-validation-for="Email" class="text-red-500 text-sm mt-1"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input asp-for="Password" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" type="password" />
+                        <span asp-validation-for="Password" class="text-red-500 text-sm mt-1"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Role" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                        <select asp-for="Role" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Role</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Student">Student</option>
+                            <option value="Lecturer">Lecturer</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-red-500 text-sm mt-1"></span>
+                    </div>
+                    <div class="flex justify-end space-x-4">
+                        <a href="@Url.Action("Index", "Dashboard")" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</a>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Create</button>
+                    </div>
+                </form>
+            </div>
+        </main>
     </div>
-    <div class="form-group mb-3">
-        <label asp-for="Email" class="control-label"></label>
-        <input name="Email" class="form-control"/>
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-3">
-        <p>Password</p>
-        <label asp-for="Password" class="control-label"></label>
-        <input asp-for="Password" class="form-control" type="password"/>
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-3">
-        <label asp-for="Role" class="control-label"></label>
-        <select asp-for="Role" class="form-control">
-            <option value="">Select Role</option>
-            <option value="Admin">Admin</option>
-            <option value="Student">Student</option>
-            <option value="Lecturer">Lecturer</option>
-        </select>
-        <span asp-validation-for="Role" class="text-danger"></span>
-    </div>
-    <div class="form-group mt-3">
-        <button type="submit" class="btn btn-primary">Create</button>
-        <a href="@Url.Action("Index", "Dashboard")" class="btn btn-secondary">Cancel</a>
-    </div>
-</form>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-4 text-center">
+        <p>&copy; 2025 SIMS. All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,100 +1,163 @@
 ﻿@model WebSIMS.Models.ViewModels.DashboardViewModel
-<h2>Welcome, @Model.UserName (@Model.Role)</h2>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
-@if (TempData["Notification"] != null)
-{
-    <div class="alert alert-success">@TempData["Notification"]</div>
+@{
+    ViewData["Title"] = "Dashboard";
 }
 
-<form action="/Authen/Logout" method="post">
-    <button type="submit">Logout</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMS - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="bg-blue-700 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">SIMS - Dashboard</h1>
+            <nav class="flex items-center space-x-4">
+                <a href="@Url.Action("Index", "Dashboard")" class="hover:underline">Dashboard</a>
+                <a href="#" class="hover:underline">Profile</a>
+                <form action="/Authen/Logout" method="post" class="inline">
+                    <button type="submit" class="hover:underline">Logout</button>
+                </form>
+            </nav>
+        </div>
+    </header>
 
-@if (Model.Role == "Admin")
-{
-    <h3>All Courses</h3>
-    @if (Model.Courses != null && Model.Courses.Any())
-    {
-        <table class="table table-striped mt-4">
-            <thead>
-            <tr>
-                <th>Course Id</th>
-                <th>Course Name</th>
-                <th>Lecturer</th>
-            </tr>
-            </thead>
-            <tbody>
-                @foreach (var course in Model.Courses)
+    <!-- Main Layout -->
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="bg-gray-800 text-white w-64 p-4">
+            <nav class="space-y-2">
+                <a href="@Url.Action("Index", "Dashboard")" class="block p-2 rounded-md hover:bg-gray-700 bg-gray-900">Dashboard</a>
+                <a href="@Url.Action("CourseManager", "Admin")" class="block p-2 rounded-md hover:bg-gray-700">Courses</a>
+                <a href="@Url.Action("UserManager", "Admin")" class="block p-2 rounded-md hover:bg-gray-700">Users</a>
+                <a href="@Url.Action("ViewEnrollments", "Admin")" class="block p-2 rounded-md hover:bg-gray-700">Enrollments</a>
+                <a href="#" class="block p-2 rounded-md hover:bg-gray-700">Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800">Welcome, @Model.UserName (@Model.Role)</h2>
+
+                <!-- Notifications -->
+                @if (TempData["Notification"] != null)
                 {
-                    <tr>
-                        <td>@course.Id</td>
-                        <td>@course.Name</td>
-                        <td>@course.LecturerName</td>
-                    </tr>
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md alert alert-success">
+                        @TempData["Notification"]
+                    </div>
                 }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p class="mt-4">No courses found.</p>
-    }
 
-    <a href="@Url.Action("CreateCourse", "Admin")">Create New Course</a>
-    <a href="@Url.Action("CreateUser", "Admin")">Create New User</a>
-    <a href="@Url.Action("AssignStudentToCourse", "Admin")">Assign Student</a>
-    <a href="@Url.Action("UserManager", "Admin")" class="btn btn-primary">Manage Users</a>
-    <a href="@Url.Action("CourseManager", "Admin")" class="btn btn-primary">Manage Courses</a>
-    <a href="@Url.Action("ViewEnrollments", "Admin")">View all enrollments</a>
-}
-else if (Model.Role == "Lecturer")
-{
-    <h3>Your Courses</h3>
-    @if (Model.Courses != null && Model.Courses.Any())
-    {
-        <ul>
-            @foreach (var course in Model.Courses)
-            {
-                <li>
-                    @course.Name
-                    <a href="@Url.Action("ViewCoursesStudents", "Lecturer", new { courseId = course.Id })">View Students</a>
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <p>No courses found.</p>
-    }
-}
-else if (Model.Role == "Student")
-{
-    <h3>Your Enrollments</h3>
-    @if (Model.Enrollments != null && Model.Enrollments.Any())
-    {
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Course</th>
-                    <th>Lecturer</th>
-                    <th>Grade</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var enrollment in Model.Enrollments)
+                @if (Model.Role == "Admin")
                 {
-                    <tr>
-                        <td>@enrollment.CourseName</td>
-                        <td>@enrollment.LecturerName</td>
-                        <td>@(enrollment.Grade.HasValue ? enrollment.Grade.Value.ToString("F2") : "Not Graded")</td>
-                    </tr>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">All Courses</h3>
+                    @if (Model.Courses != null && Model.Courses.Any())
+                    {
+                        <table class="w-full border-collapse mt-4 bg-gray-50 rounded-md">
+                            <thead>
+                                <tr class="bg-gray-200">
+                                    <th class="p-3 text-left text-sm font-medium text-gray-700">Course ID</th>
+                                    <th class="p-3 text-left text-sm font-medium text-gray-700">Course Name</th>
+                                    <th class="p-3 text-left text-sm font-medium text-gray-700">Lecturer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var course in Model.Courses)
+                                {
+                                    <tr class="hover:bg-gray-100">
+                                        <td class="p-3 border-t">@course.Id</td>
+                                        <td class="p-3 border-t">@course.Name</td>
+                                        <td class="p-3 border-t">@course.LecturerName</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="mt-4 text-gray-600">No courses found.</p>
+                    }
+
+                    <div class="mt-6 flex flex-wrap gap-4">
+                        <a href="@Url.Action("CreateCourse", "Admin")" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Create New Course</a>
+                        <a href="@Url.Action("CreateUser", "Admin")" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Create New User</a>
+                        <a href="@Url.Action("AssignStudentToCourse", "Admin")" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Assign Student</a>
+                        <a href="@Url.Action("UserManager", "Admin")" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Manage Users</a>
+                        <a href="@Url.Action("CourseManager", "Admin")" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Manage Courses</a>
+                        <a href="@Url.Action("ViewEnrollments", "Admin")" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">View All Enrollments</a>
+                    </div>
                 }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>No enrollments found.</p>
-    }
-    <a href="@Url.Action("Index", "Student")">View your information</a>
-}
+                else if (Model.Role == "Lecturer")
+                {
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Your Courses</h3>
+                    @if (Model.Courses != null && Model.Courses.Any())
+                    {
+                        <ul class="list-disc pl-5 mt-4">
+                            @foreach (var course in Model.Courses)
+                            {
+                                <li class="mb-2">
+                                    @course.Name
+                                    <a href="@Url.Action("ViewCoursesStudents", "Lecturer", new { courseId = course.Id })" class="text-blue-500 hover:underline">View Students</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="mt-4 text-gray-600">No courses found.</p>
+                    }
+                }
+                else if (Model.Role == "Student")
+                {
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Your Enrollments</h3>
+                    @if (Model.Enrollments != null && Model.Enrollments.Any())
+                    {
+                        <table class="w-full border-collapse mt-4 bg-gray-50 rounded-md">
+                            <thead>
+                                <tr class="bg-gray-200">
+                                    <th class="p-3 text-left text-sm font-medium text-gray-700">Course</th>
+                                    <th class="p-3 text-left text-sm font-medium text-gray-700">Lecturer</th>
+                                    <th class="p-3 text-left text-sm font-medium text-gray-700">Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var enrollment in Model.Enrollments)
+                                {
+                                    <tr class="hover:bg-gray-100">
+                                        <td class="p-3 border-t">@enrollment.CourseName</td>
+                                        <td class="p-3 border-t">@enrollment.LecturerName</td>
+                                        <td class="p-3 border-t">@(enrollment.Grade.HasValue ? enrollment.Grade.Value.ToString("F2") : "Not Graded")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="mt-4 text-gray-600">No enrollments found.</p>
+                    }
+                    <a href="@Url.Action("Index", "Student")" class="inline-block mt-6 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">View Your Information</a>
+                }
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-4 text-center">
+        <p>&copy; 2025 SIMS. All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
