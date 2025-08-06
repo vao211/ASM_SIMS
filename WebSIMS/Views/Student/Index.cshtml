@@ -1,0 +1,42 @@
+﻿@model WebSIMS.Models.ViewModels.StudentViewModel
+
+@{
+    ViewData["Title"] = "Student Information";
+}
+
+<h2>Student Information</h2>
+
+<div class="container">
+    <h3>Name: @Model.Name</h3>
+    <p><strong>Email:</strong> @User.Identity.Name</p>
+
+    <h4>Your Academic Records</h4>
+    @if (Model.Enrollments != null && Model.Enrollments.Any())
+    {
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Course</th>
+                <th>Lecturer</th>
+                <th>Grade</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var enrollment in Model.Enrollments)
+            {
+                <tr>
+                    <td>@enrollment.CourseName</td>
+                    <td>@enrollment.LecturerName</td>
+                    <td>@(enrollment.Grade.HasValue ? enrollment.Grade.Value.ToString("F2") : "Not Graded")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No enrollments found.</p>
+    }
+
+    <a href="@Url.Action("Index", "Dashboard")" class="btn btn-primary">Back to Dashboard</a>
+</div>

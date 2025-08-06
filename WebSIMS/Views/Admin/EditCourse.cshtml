@@ -1,0 +1,38 @@
+﻿@model WebSIMS.Models.ViewModels.CreateCourseViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Edit Course";
+}
+
+<h2>Edit Course</h2>
+
+<div class="container">
+    <form asp-action="EditCourse" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <label asp-for="Name">Course Name</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="LecturerId">Lecturer</label>
+            <select asp-for="LecturerId" class="form-control" asp-items="@Model.lecturersList">
+                <option value="">-- Select a Lecturer --</option>
+            </select>
+            <span asp-validation-for="LecturerId" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+        <a href="@Url.Action("CourseManager", "Admin")" class="btn btn-secondary mt-3">Cancel</a>
+    </form>
+
+    @if (ViewData.ModelState.Any(x => x.Key == ""))
+    {
+        <div class="alert alert-danger mt-3">
+            @foreach (var error in ViewData.ModelState[""].Errors)
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+</div>

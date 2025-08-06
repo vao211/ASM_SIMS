@@ -1,0 +1,65 @@
+﻿@model WebSIMS.Models.ViewModels.CreateUserViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<h2>Create User</h2>
+
+@if (TempData["SuccessNotification"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessNotification"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<form asp-action="CreateUser" method="post">
+    <div class="form-group mb-3">
+        <label asp-for="Name" class="control-label"></label>
+        <input name="Name" class="form-control"/>
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="Email" class="control-label"></label>
+        <input name="Email" class="form-control"/>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <p>Password</p>
+        <label asp-for="Password" class="control-label"></label>
+        <input asp-for="Password" class="form-control" type="password"/>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="Role" class="control-label"></label>
+        <select asp-for="Role" class="form-control">
+            <option value="">Select Role</option>
+            <option value="Admin">Admin</option>
+            <option value="Student">Student</option>
+            <option value="Lecturer">Lecturer</option>
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a href="@Url.Action("Index", "Dashboard")" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>

@@ -1,0 +1,54 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model WebSIMS.Models.ViewModels.EnrollmentListViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Manage Enrollments";
+}
+
+<h2>Manage Enrollments</h2>
+
+<div class="container">
+    <!-- Dropdown để chọn khóa học -->
+    <form asp-action="ViewEnrollments" method="get">
+        <div class="form-group">
+            <label for="CourseId">Select Course:</label>
+            <select asp-for="CourseId" class="form-control" asp-items="@Model.CoursesList" onchange="this.form.submit()">
+                <option value="">-- Select a Course --</option>
+            </select>
+        </div>
+    </form>
+
+    <!-- Bảng hiển GastGrid hiển thị thông tin đăng ký -->
+    @if (Model.Enrollments != null && Model.Enrollments.Any())
+    {
+        <table class="table table-striped mt-4">
+            <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Course Id</th>
+                <th>Course Name</th>
+                <th>Lecturer Name</th>
+                <th>Grade</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var enrollment in Model.Enrollments)
+            {
+                <tr>
+                    <td>@enrollment.StudentName</td>
+                    <td>@Model.CourseId</td>
+                    <td>@enrollment.CourseName</td>
+                    <td>@enrollment.LecturerName</td>
+                    <td>@(enrollment.Grade.HasValue ? enrollment.Grade.Value.ToString("F2") : "Not Graded")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="mt-4">No enrollments found for the selected course (Id: @Model.CourseId).</p>
+    }
+</div>
+<a href="@Url.Action("Index", "Dashboard")">Back</a>
+

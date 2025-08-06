@@ -1,0 +1,41 @@
+﻿@model WebSIMS.Models.ViewModels.CreateUserViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<h2>Edit User</h2>
+
+<div class="container">
+    <form asp-action="EditUser" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Email" />
+        <input type="hidden" asp-for="Role" />
+        <div class="form-group">
+            <label asp-for="Name">Name</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Email">Email</label>
+            <input asp-for="Email" class="form-control" disabled />
+        </div>
+        <div class="form-group">
+            <label asp-for="Role">Role</label>
+            <input asp-for="Role" class="form-control" disabled />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+        <a href="@Url.Action("UserManager", "Admin")" class="btn btn-secondary mt-3">Cancel</a>
+    </form>
+
+    @if (ViewData.ModelState.Any(x => x.Key == ""))
+    {
+        <div class="alert alert-danger mt-3">
+            @foreach (var error in ViewData.ModelState[""].Errors)
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,33 @@
+﻿@model WebSIMS.Models.ViewModels.CourseViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h2>Students in course: @Model.Name</h2>
+
+<p><strong>Lecturer:</strong> @Model.LecturerName</p>
+
+@if (Model.StudentNames != null && Model.StudentNames.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Student's name</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var studentName in Model.StudentNames)
+        {
+            <tr>
+                <td>@studentName</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No student in this course</p>
+}
+
+<a href="@Url.Action("Index", "Dashboard")" class="btn btn-secondary">back</a>
+<a asp-action="GradeStudent" asp-route-courseId="@Model.Id" class="btn btn-primary">Grade</a>
+<a asp-action="ViewCourseGrades" asp-route-courseId="@Model.Id" class="btn btn-info">View grade</a>

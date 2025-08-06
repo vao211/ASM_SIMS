@@ -1,0 +1,31 @@
+﻿@model List<WebSIMS.Models.ViewModels.EnrollmentViewModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h2>Grade list - Course: @ViewBag.CourseName</h2>
+
+@if (Model.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Student's Name</th>
+            <th>Grade</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var record in Model)
+        {
+            <tr>
+                <td>@record.StudentName</td>
+                <td>@record.Grade.ToString()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No grading in this course</p>
+}
+
+<a asp-action="ViewCoursesStudents" asp-route-courseId="@ViewBag.CourseId"  class="btn btn-secondary">Back</a>

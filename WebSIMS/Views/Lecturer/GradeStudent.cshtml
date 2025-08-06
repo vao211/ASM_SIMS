@@ -1,0 +1,38 @@
+﻿@model WebSIMS.Models.ViewModels.GradeStudentViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h2>Grade students in Course: @Model.CourseName</h2>
+
+@if (TempData["Notification"] != null)
+{
+    <div class="alert alert-success">@TempData["Notification"]</div>
+}
+
+<form asp-action="GradeStudent" method="post">
+    <input type="hidden" asp-for="CourseId" />
+    <input type="hidden" asp-for="CourseName" />
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Student</th>
+            <th>Grade</th>
+        </tr>
+        </thead>
+        <tbody>
+        @for (int i = 0; i < Model.StudentsList.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Model.StudentsList[i].Text
+                    <input type="hidden" name="Grades[@i].StudentId" value="@Model.StudentsList[i].Value" />
+                </td>
+                <td>
+                    <input name="Grades[@i].Grade" class="form-control" type="number" step="0.01" min="0" max="10" />
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="ViewCoursesStudents" asp-route-courseId="@Model.CourseId" class="btn btn-secondary">Cancel</a>
+</form>

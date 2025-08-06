@@ -1,0 +1,70 @@
+﻿@model WebSIMS.Models.ViewModels.CourseManagerViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Course Manager";
+}
+
+<h2>Course Manager</h2>
+
+<div class="container">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Notification"] != null)
+    {
+        <div class="alert alert-success">@TempData["Notification"]</div>
+    }
+
+    @if (Model.Courses != null && Model.Courses.Any())
+    {
+        foreach (var course in Model.Courses)
+        {
+            <h3>@course.Name</h3>
+            <p><strong>Lecturer:</strong> @course.LecturerName</p>
+            
+            @if (course.Students != null && course.Students.Any())
+            {
+                <table class="table table-striped mt-2" border="1px">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var student in course.Students)
+                        {
+                            <tr>
+                                <td>@student.Id</td>
+                                <td>@student.Name</td>
+                                <td>
+                                    <form asp-action="RemoveStudentFromCourse" method="post" style="display:inline;" 
+                                          onsubmit="return confirm('Are you sure you want to remove this student from the course?');">
+                                        <input type="hidden" name="studentId" value="@student.Id" />
+                                        <input type="hidden" name="courseId" value="@course.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="mt-2">No students enrolled in this course.</p>
+            }
+
+            <a href="@Url.Action("EditCourse", "Admin", new { id = course.Id })" class="btn btn-primary btn-sm mb-3">Edit Course</a>
+        }
+    }
+    else
+    {
+        <p class="mt-4">No courses found.</p>
+    }
+
+    <a href="@Url.Action("Index", "Dashboard")" class="btn btn-secondary">Back to Dashboard</a>
+</div>

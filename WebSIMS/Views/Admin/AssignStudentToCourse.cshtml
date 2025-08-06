@@ -1,0 +1,28 @@
+﻿@model WebSIMS.Models.ViewModels.AssignStudentToCourseViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h2>Assign Student</h2>
+
+@if (TempData["Notification"] != null)
+{
+    <div class="alert alert-success">@TempData["Notification"]</div>
+}
+
+<form asp-action="AssignStudentToCourse" method="post">
+    <div class="form-group">
+        <label asp-for="StudentId">Students</label>
+        <select asp-for="StudentId" asp-items="@Model.StudentsList" class="form-control">
+            <option value="">Select student</option>
+        </select>
+        <span asp-validation-for="StudentId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CourseId">Courses</label>
+        <select asp-for="CourseId" asp-items="@Model.CoursesList" class="form-control">
+            <option value="">Select course</option>
+        </select>
+        <span asp-validation-for="CourseId" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Assign</button>
+</form>
+<a href="@Url.Action("Index", "Dashboard")">Back</a>

@@ -1,0 +1,23 @@
+﻿@model WebSIMS.Models.ViewModels.LoginViewModel
+
+@{
+    Layout = null;
+}
+<h2>Login</h2>
+@if (ViewData["MessageLogin"] != null)
+{
+    <div class="alert alert-danger">@ViewData["MessageLogin"]</div>
+}
+<form action="/Authen/Login" method="post">
+    <div>
+        <label for="Email">Email</label>
+        <input name="Email" id="Email" class="form-control" type="text" value="@Model?.Email" />
+        <span class="text-danger">@Html.ValidationMessageFor(m => m.Email)</span>
+    </div>
+    <div>
+        <label for="Password">Password</label>
+        <input name="Password" id="Password" class="form-control" type="password" value="@Model?.Password" />
+        <span class="text-danger">@Html.ValidationMessageFor(m => m.Password)</span>
+    </div>
+    <button type="submit">Login</button>
+</form>
