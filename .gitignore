@@ -63,6 +63,7 @@ appsettings.Development.json
 appsettings.Local.json
 appsettings.Staging.json
 appsettings.Production.json
+appsettings.json
 
 # Rider IDE
 .idea/
