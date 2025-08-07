@@ -24,7 +24,7 @@ body {
     font-size: 20px;
     font-weight: 600;
     color: white !important;
-    margin-left: 10px;
+    margin-left: 25px; /* Khoảng cách 25px như yêu cầu */
 }
 
 .btn-back {
@@ -72,10 +72,7 @@ p {
     color: #333;
     font-size: 16px;
     margin-bottom: 20px;
-}
-
-strong {
-    color: #6b48ff;
+    text-align: center;
 }
 
 .table {
@@ -123,26 +120,6 @@ strong {
 }
 
     .btn-secondary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
-
-.btn-primary {
-    background: linear-gradient(45deg, #6b48ff, #00ddeb);
-    color: white;
-}
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
-
-.btn-info {
-    background: #17a2b8;
-    color: white;
-}
-
-    .btn-info:hover {
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
