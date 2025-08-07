@@ -24,6 +24,7 @@ body {
     display: flex;
     flex-direction: column;
     transition: width 0.3s ease;
+    overflow: hidden; /* Ngăn text tràn ra ngoài khi thu gọn */
 }
 
     .sidebar.collapsed {
@@ -32,9 +33,20 @@ body {
 
         .sidebar.collapsed .sidebar-header h4,
         .sidebar.collapsed .nav.flex-column .nav-link:not(.btn-logout),
-        .sidebar.collapsed .btn-logout .nav-head-link .nav-text .btn-logout{
-            display: none;
+        .sidebar.collapsed .nav-head-link {
+            display: none; /* Đảm bảo ẩn toàn bộ text */
         }
+
+        .sidebar.collapsed .btn-logout {
+            width: 40px; /* Thu nhỏ nút logout */
+            padding: 10px 0;
+            text-indent: -9999px; /* Ẩn text nhưng giữ không gian */
+            background: red url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>') no-repeat center; /* Icon logout */
+        }
+
+            .sidebar.collapsed .btn-logout:hover {
+                background-color: #c0392b;
+            }
 
 .sidebar-header {
     display: flex;
@@ -70,14 +82,11 @@ body {
     flex-direction: column;
 }
 
-    .nav.flex-column {
-        margin-bottom: 10px;
-    }
-    .nav-item {
+    .nav.flex-column .nav-item {
         margin-bottom: 5px;
     }
 
-.nav-head-link{
+.nav-head-link {
     color: white;
     font-size: 20px;
     font-weight: 600;
@@ -85,31 +94,33 @@ body {
     margin-bottom: 20px;
 }
 
-.nav.flex-column .nav-link .nav-text .nav-head-link {
+.nav.flex-column .nav-link {
     color: white !important;
     font-size: 16px;
     padding: 10px;
     border-radius: 5px;
     text-decoration: none;
     transition: background 0.3s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
 }
 
-        .nav.flex-column .nav-link:hover {
-            background: #34495e;
-            color: #e0e0e0;
-        }
+    .nav.flex-column .nav-link:hover {
+        background: #34495e;
+        color: #e0e0e0;
+    }
 
 .logout-item {
     margin-top: auto;
 }
 
 .nav.flex-column .btn-logout {
-    background: red; /* Đổi màu nền thành đỏ đậm để nổi bật */
-    color: white; /* Màu chữ trắng để tương phản */
+    background: red;
+    color: white;
     width: 100%;
     padding: 10px;
     border: none;
-    border-radius: 5px; /* Bo góc nhẹ để đồng bộ với các nav-link */
+    border-radius: 5px;
     text-align: center;
     font-size: 16px;
     font-weight: 500;
@@ -117,7 +128,7 @@ body {
 }
 
     .nav.flex-column .btn-logout:hover {
-        background: #c0392b; /* Màu đỏ tối hơn khi hover */
+        background: #c0392b;
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
@@ -191,32 +202,11 @@ h3 {
     background-color: #e9ecef;
 }
 
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-    ul li {
-        padding: 10px 0;
-        font-size: 16px;
-        color: #333;
-        border-bottom: 1px solid #ddd;
-    }
-
-        ul li a {
-            color: #6b48ff;
-            text-decoration: none;
-            margin-left: 10px;
-        }
-
-            ul li a:hover {
-                text-decoration: underline;
-            }
-
 p {
     color: #333;
     font-size: 16px;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 @media (max-width: 768px) {
@@ -231,12 +221,21 @@ p {
 
         .sidebar.collapsed {
             width: 100%;
+            height: 60px; /* Giới hạn chiều cao khi thu gọn */
+            overflow: hidden;
         }
 
             .sidebar.collapsed .sidebar-header h4,
             .sidebar.collapsed .nav.flex-column .nav-link:not(.btn-logout),
+            .sidebar.collapsed .nav-head-link {
+                display: none;
+            }
+
             .sidebar.collapsed .btn-logout {
-                display: block;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 60px;
             }
 
     .main-content {
@@ -258,6 +257,7 @@ p {
         padding: 8px;
     }
 }
+
 .welcome-popup {
     position: fixed;
     top: 50%;
