@@ -56,7 +56,9 @@
                     </li>
                 }
                 <li class="nav-item logout-item">
-                    <a class="nav-link btn-logout" href="~/Authen/Logout">Logout</a>
+                    <form action="/Authen/Logout" method="post">
+                        <button class="nav-link btn-logout" type="submit">Logout</button>
+                    </form>
                 </li>
             </ul>
         </nav>

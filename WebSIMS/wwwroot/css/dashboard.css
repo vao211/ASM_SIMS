@@ -18,7 +18,7 @@ body {
 
 .sidebar {
     width: 250px;
-    background: #2c3e50; /* Màu nền khác với body */
+    background: #2c3e50;
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
     display: flex;
@@ -89,22 +89,25 @@ body {
         }
 
 .logout-item {
-    margin-top: auto; /* Đẩy nút Logout xuống dưới cùng */
+    margin-top: auto;
 }
 
 .nav.flex-column .btn-logout {
-    background: white;
-    color: #2c3e50;
+    background: Ư; /* Đổi màu nền thành đỏ đậm để nổi bật */
+    color: white; /* Màu chữ trắng để tương phản */
     padding: 10px;
-    border-radius: 25px;
+    border: none;
+    border-radius: 5px; /* Bo góc nhẹ để đồng bộ với các nav-link */
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
     .nav.flex-column .btn-logout:hover {
+        background: #c0392b; /* Màu đỏ tối hơn khi hover */
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        color: #1a252f;
     }
 
 .main-content {
