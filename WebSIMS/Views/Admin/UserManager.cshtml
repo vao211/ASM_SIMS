@@ -69,7 +69,7 @@
                                     {
                                         <a class="a-student-information" href="@Url.Action("ViewStudent", "Admin", new { id = user.Id })">@user.Name</a>
                                     }
-                                    @if (user.Role == "Lecturer")
+                                    else if (user.Role == "Lecturer")
                                     {
                                         <a class="a-student-information" href="@Url.Action("ViewLecturer", "Admin", new { id = user.Id })">@user.Name</a>
                                     }
