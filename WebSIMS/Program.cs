@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using WebSIMS.Data;
+using WebSIMS.Models.ViewModels;
 using WebSIMS.Repository;
 using WebSIMS.Repository.Interfaces;
 using WebSIMS.Services;
@@ -57,6 +58,7 @@ public class Program
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}");
+        
         app.Run();
     }
 }

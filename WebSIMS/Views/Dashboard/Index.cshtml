@@ -1,100 +1,223 @@
 ﻿@model WebSIMS.Models.ViewModels.DashboardViewModel
-<h2>Welcome, @Model.UserName (@Model.Role)</h2>
-
-@if (TempData["Notification"] != null)
-{
-    <div class="alert alert-success">@TempData["Notification"]</div>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Dashboard";
 }
 
-<form action="/Authen/Logout" method="post">
-    <button type="submit">Logout</button>
-</form>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/dashboard.css" />
 
-@if (Model.Role == "Admin")
-{
-    <h3>All Courses</h3>
-    @if (Model.Courses != null && Model.Courses.Any())
+</head>
+
+<body>
+    <!-- Welcome Popup -->
+    @if (TempData["FreshLogin"] != null && Convert.ToBoolean(TempData["FreshLogin"]))
     {
-        <table class="table table-striped mt-4">
-            <thead>
-            <tr>
-                <th>Course Id</th>
-                <th>Course Name</th>
-                <th>Lecturer</th>
-            </tr>
-            </thead>
-            <tbody>
-                @foreach (var course in Model.Courses)
+        <div class="overlay" id="popupOverlay"></div>
+        <div class="welcome-popup" id="welcomePopup">
+            <button class="close-btn" onclick="closePopup()">✕</button>
+            <h3>Welcome, @Model.UserName!</h3>
+            <p>You have successfully logged in as @Model.Role.</p>
+        </div>
+    }
+
+    <div class="wrapper">
+        <!-- Sidebar Navbar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h4>SIMS Dashboard</h4>
+                <button class="toggle-btn" id="toggleBtn">
+                    <span class="toggle-icon">☰</span>
+                </button>
+            </div>
+            <ul class="nav flex-column">
+                @if (Model.Role == "Admin")
                 {
-                    <tr>
-                        <td>@course.Id</td>
-                        <td>@course.Name</td>
-                        <td>@course.LecturerName</td>
-                    </tr>
+                    <li class="nav-item">
+                        <p class="nav-head-link">Your Courses</p>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("CreateCourse", "Admin")">Create Course</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("CreateUser", "Admin")">Create User</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("AssignStudentToCourse", "Admin")">Assign Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("UserManager", "Admin")">Manage Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("CourseManager", "Admin")">Manage Courses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("ViewEnrollments", "Admin")">View Enrollments</a>
+                    </li>
                 }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p class="mt-4">No courses found.</p>
-    }
-
-    <a href="@Url.Action("CreateCourse", "Admin")">Create New Course</a>
-    <a href="@Url.Action("CreateUser", "Admin")">Create New User</a>
-    <a href="@Url.Action("AssignStudentToCourse", "Admin")">Assign Student</a>
-    <a href="@Url.Action("UserManager", "Admin")" class="btn btn-primary">Manage Users</a>
-    <a href="@Url.Action("CourseManager", "Admin")" class="btn btn-primary">Manage Courses</a>
-    <a href="@Url.Action("ViewEnrollments", "Admin")">View all enrollments</a>
-}
-else if (Model.Role == "Lecturer")
-{
-    <h3>Your Courses</h3>
-    @if (Model.Courses != null && Model.Courses.Any())
-    {
-        <ul>
-            @foreach (var course in Model.Courses)
-            {
-                <li>
-                    @course.Name
-                    <a href="@Url.Action("ViewCoursesStudents", "Lecturer", new { courseId = course.Id })">View Students</a>
+                else if (Model.Role == "Lecturer")
+                {
+                    @if (Model.Courses != null && Model.Courses.Any())
+                    {
+                        <li class="nav-item">
+                            <p class="nav-head-link">Your Courses</p>
+                        </li>
+                        @foreach (var course in Model.Courses)
+                        {
+                            <li class="nav-item">
+                                <a class ="nav-link" href="@Url.Action("ViewCoursesStudents", "Lecturer", new { courseId = course.Id })">@course.Name</a>
+                            </li>
+                        }                        
+                    }
+                    else
+                    {
+                        <p>No courses found.</p>
+                    }
+                    
+                }
+                else if (Model.Role == "Student")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Student")">Your Information</a>
+                    </li>
+                }
+                <li class="nav-item logout-item">
+                    <form action="/Authen/Logout" method="post">
+                        <button class="nav-link btn-logout" type="submit">Logout</button>
+                    </form>
                 </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <p>No courses found.</p>
-    }
-}
-else if (Model.Role == "Student")
-{
-    <h3>Your Enrollments</h3>
-    @if (Model.Enrollments != null && Model.Enrollments.Any())
-    {
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Course</th>
-                    <th>Lecturer</th>
-                    <th>Grade</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var enrollment in Model.Enrollments)
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="container">
+                <h2>Welcome, @Model.UserName (@Model.Role)</h2>
+                @if (TempData["Notification"] != null)
                 {
-                    <tr>
-                        <td>@enrollment.CourseName</td>
-                        <td>@enrollment.LecturerName</td>
-                        <td>@(enrollment.Grade.HasValue ? enrollment.Grade.Value.ToString("F2") : "Not Graded")</td>
-                    </tr>
+                    <div class="alert alert-success">@TempData["Notification"]</div>
                 }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>No enrollments found.</p>
-    }
-    <a href="@Url.Action("Index", "Student")">View your information</a>
-}
+
+                @if (Model.Role == "Admin")
+                {
+                    <h3>All Courses</h3>
+                    @if (Model.Courses != null && Model.Courses.Any())
+                    {
+                        <table class="table table-striped mt-4">
+                            <thead>
+                                <tr>
+                                    <th>Course Id</th>
+                                    <th>Course Name</th>
+                                    <th>Lecturer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var course in Model.Courses)
+                                {
+                                    <tr>
+                                        <td>@course.Id</td>
+                                        <td>@course.Name</td>
+                                        <td>@course.LecturerName</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="mt-4">No courses found.</p>
+                    }
+                }
+                else if (Model.Role == "Lecturer")
+                {
+                    <h3>Your Courses</h3>
+                    @if (Model.Courses != null && Model.Courses.Any())
+                    {
+                        <table class="table table-striped mt-4">
+                            <thead>
+                                <tr>
+                                    <th>Course Name</th>
+                                    <th>Student</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var course in Model.Courses)
+                                {
+                                    <tr>
+                                        <td>@course.Name</td>
+                                        <td><a href="@Url.Action("ViewCoursesStudents", "Lecturer", new { courseId = course.Id })">View Students</a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        
+                    }
+                    else
+                    {
+                        <p>No courses found.</p>
+                    }
+                }
+                else if (Model.Role == "Student")
+                {
+                    <h3>Your Enrollments</h3>
+                    @if (Model.Enrollments != null && Model.Enrollments.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Lecturer</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var enrollment in Model.Enrollments)
+                                {
+                                    <tr>
+                                        <td>@enrollment.CourseName</td>
+                                        <td>@enrollment.LecturerName</td>
+                                        <td>@(enrollment.Grade.HasValue? enrollment.Grade.Value.ToString("F2") : "Not Graded")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No enrollments found.</p>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#toggleBtn').click(function () {
+                $('#sidebar').toggleClass('collapsed');
+                $('.toggle-icon').text($('#sidebar').hasClass('collapsed') ? '☰' : '✕');
+            });
+
+            // Popup logic
+            if ($('#welcomePopup').length) {
+                setTimeout(function () {
+                    $('#welcomePopup').addClass('hidden');
+                    $('#popupOverlay').addClass('hidden');
+                }, 6000);
+            }
+        });
+
+        function closePopup() {
+            $('#welcomePopup').addClass('hidden');
+            $('#popupOverlay').addClass('hidden');
+        }
+    </script>
+</body>
