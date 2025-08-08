@@ -34,10 +34,10 @@
         <div class="container">
             <h2>Create User</h2>
 
-            @if (TempData["SuccessNotification"] != null)
+            @if (TempData["Notification"] != null)
             {
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @TempData["SuccessNotification"]
+                    @TempData["Notification"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }

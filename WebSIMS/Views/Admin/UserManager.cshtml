@@ -53,12 +53,12 @@
             {
                 <table class="table table-striped mt-4">
                     <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Actions</th>
-                        </tr>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
                     </thead>
                     <tbody>
                         @foreach (var user in Model)
@@ -68,6 +68,10 @@
                                     @if (user.Role == "Student")
                                     {
                                         <a class="a-student-information" href="@Url.Action("ViewStudent", "Admin", new { id = user.Id })">@user.Name</a>
+                                    }
+                                    @if (user.Role == "Lecturer")
+                                    {
+                                        <a class="a-student-information" href="@Url.Action("ViewLecturer", "Admin", new { id = user.Id })">@user.Name</a>
                                     }
                                     else
                                     {

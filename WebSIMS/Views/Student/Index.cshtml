@@ -21,7 +21,7 @@
                     <span class="material-symbols-outlined">arrow_back</span>
                 </a>
                 <a class="navbar-brand" href="#" style="margin-left: 25px;">Student Information</a>
-            </<div>
+            </div>
         </div>
     </nav>
 
@@ -30,8 +30,7 @@
         <div class="container">
             <h2>Student Information</h2>
             <h3>Name: @Model.Name</h3>
-            <p><strong>Email:</strong> @User.Identity.Name</p>
-
+            <p><strong>Email:</strong> @Model.Email</p>
             <h4>Your Academic Records</h4>
             @if (Model.Enrollments != null && Model.Enrollments.Any())
             {

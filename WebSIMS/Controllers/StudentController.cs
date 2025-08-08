@@ -38,6 +38,7 @@ public class StudentController : Controller
         {
             Id = user.Id,
             Name = user.Name,
+            Email = user.Email,
             Enrollments = enrollments.Select(e => ViewModelFactory.CreateEnrollmentViewModel(e, e.Student.Name, e.Courses.Name)).ToList()
         };
 

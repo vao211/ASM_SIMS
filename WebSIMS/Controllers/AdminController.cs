@@ -47,6 +47,41 @@ public class AdminController : Controller
     }
     
     [HttpGet]
+    public async Task<IActionResult> ViewStudent(int id)
+    {
+        var student =  _adminService.GetAllUsersAsync().Result.FirstOrDefault(u => u.Id == id);
+        if (student == null || student.Role != "Student")
+        {
+            return NotFound();
+        }
+        var userEmail = student.Email;
+        var enrollments = await _adminService.GetEnrollmentsByStudentId(id);
+        var model = new StudentViewModel
+        {
+            Id = student.Id,
+            Name = student.Name,
+            Email = student.Email,
+            Enrollments = enrollments.Select(e => ViewModelFactory.CreateEnrollmentViewModel(e, e.Student.Name, e.Courses.Name)).ToList()
+        };
+
+        return View(model);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> ViewLecturer(int id)
+    {
+        var lecturer =  _adminService.GetAllUsersAsync().Result.FirstOrDefault(u=>u.Id == id);
+        if (lecturer == null || lecturer.Role != "Lecturer")
+        {
+            return NotFound();
+        }
+
+        var courses = await _adminService.GetCoursesByLecturerAsync(id);
+        var model = ViewModelFactory.CreateLecturerViewModel(lecturer, courses);
+        return View(model);
+    }
+    
+    [HttpGet]
     public IActionResult CreateUser()
     {
         return View(new CreateUserViewModel());
@@ -138,25 +173,7 @@ public class AdminController : Controller
         var model = ViewModelFactory.CreateCreateCourseViewModel(new Courses(), lecturersSelectList);
         return View(model);
     }
-    [HttpGet]
-    public async Task<IActionResult> ViewStudent(int id)
-    {
-        var user =  _adminService.GetAllUsersAsync().Result.FirstOrDefault(u => u.Id == id);
-        if (user == null || user.Role != "Student")
-        {
-            return NotFound();
-        }
 
-        var enrollments = await _adminService.GetEnrollmentsByCourseAsync(id);
-        var model = new StudentViewModel
-        {
-            Id = user.Id,
-            Name = user.Name,
-            Enrollments = enrollments.Select(e => ViewModelFactory.CreateEnrollmentViewModel(e, e.Student.Name, e.Courses.Name)).ToList()
-        };
-
-        return View(model);
-    }
     [HttpPost]
     public async Task<IActionResult> CreateCourse(CreateCourseViewModel model)
     {

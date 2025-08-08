@@ -111,8 +111,16 @@ public class AdminService
     {
         return await _userRepository.GetAllAsync();
     }
+    public async Task<List<Enrollments>> GetEnrollmentsByStudentId(int id)
+    {
+        return await _enrollmentRepository.GetEnrollmentsByStudentAsync(id);
+    }
     public async Task<List<Enrollments>> GetEnrollmentsByCourseAsync(int courseId)
     {
         return await _enrollmentRepository.GetEnrollmentsByCourseAsync(courseId);
+    }
+    public async Task<List<Courses>> GetCoursesByLecturerAsync(int lecturerId)
+    {
+        return await _courseRepository.GetCoursesByLecturerAsync(lecturerId);
     }
 }

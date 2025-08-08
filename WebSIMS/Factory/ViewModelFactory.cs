@@ -29,6 +29,17 @@ public static class ViewModelFactory
             lecturersList = lecturerList
         };
     }
+    public static LecturerViewModel CreateLecturerViewModel(Users lecturer, List<Courses> courses)
+    {
+        return new LecturerViewModel
+        {
+            Id = lecturer.Id,
+            Name = lecturer.Name,
+            Email = lecturer.Email,
+            Courses = courses.Select(c => CreateCourseViewModel(c, lecturer.Name)).ToList()
+        };
+    }
+
     public static CourseViewModel CreateCourseViewModel(Courses courses, string lecturerName, List<string> studentNames = null)
     {
         return new CourseViewModel
