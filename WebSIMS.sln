@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSIMS", "WebSIMS\WebSIMS.csproj", "{549A1412-C272-40F7-8BC2-F74412EFD2B4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xUnitTest", "xUnitTest\xUnitTest.csproj", "{F91AC4A4-B792-4491-8F5F-C95F8D9E6837}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{549A1412-C272-40F7-8BC2-F74412EFD2B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{549A1412-C272-40F7-8BC2-F74412EFD2B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{549A1412-C272-40F7-8BC2-F74412EFD2B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F91AC4A4-B792-4491-8F5F-C95F8D9E6837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F91AC4A4-B792-4491-8F5F-C95F8D9E6837}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F91AC4A4-B792-4491-8F5F-C95F8D9E6837}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F91AC4A4-B792-4491-8F5F-C95F8D9E6837}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

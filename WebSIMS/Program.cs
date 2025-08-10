@@ -1,5 +1,3 @@
-
-
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using WebSIMS.Data;
@@ -8,7 +6,6 @@ using WebSIMS.Repository;
 using WebSIMS.Repository.Interfaces;
 using WebSIMS.Services;
 using WebSIMS.Services.Interfaces;
-
 namespace WebSIMS;
 
 public class Program
@@ -41,11 +38,12 @@ public class Program
         builder.Services.AddScoped<ICourseRepository, CourseRepository>();
         builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         builder.Services.AddScoped<IAuthenService, AuthenService>();
+        builder.Services.AddScoped<ICookiesService, CookiesService>();
         builder.Services.AddScoped<AdminService>();
         builder.Services.AddScoped<StudentService>();
         builder.Services.AddScoped<LecturerService>();
         builder.Services.AddScoped<CourseService>();
-        builder.Services.AddScoped<ICookiesService, CookiesService>();
+
 
         var app = builder.Build();
         
