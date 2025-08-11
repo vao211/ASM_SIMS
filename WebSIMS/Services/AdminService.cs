@@ -101,6 +101,13 @@ public class AdminService
         {
             throw new InvalidOperationException("User is not a student.");
         }
+        
+        var existingEnrollment = await _enrollmentRepository.GetEnrollmentAsync(studentId, courseId);
+        if (existingEnrollment != null)
+        {
+            throw new InvalidOperationException("Student is already enrolled in this course.");
+        }
+
         var enrollment = new Enrollments
         {
             StudentId = studentId,

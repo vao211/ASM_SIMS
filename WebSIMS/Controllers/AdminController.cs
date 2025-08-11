@@ -232,6 +232,7 @@ public class AdminController : Controller
             }).ToList();
             return View(model);
         }
+
         try
         {
             await _adminService.AssignStudentToCourseAsync(model.StudentId, model.CourseId);
@@ -240,7 +241,7 @@ public class AdminController : Controller
         }
         catch (InvalidOperationException ex)
         {
-            ModelState.AddModelError("", ex.Message);
+            ModelState.AddModelError("", ex.Message); 
             var students = await _adminService.GetAllStudentsAsync();
             var courses = await _adminService.GetAllCoursesAsync();
             model.StudentsList = students.Select(s => new SelectListItem
