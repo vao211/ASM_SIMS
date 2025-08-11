@@ -39,20 +39,26 @@ public class AdminService
         var user = await _authenService.CreateUserAsync(model);
         return ViewModelFactory.CreateCreateUserViewModel(user);
     }
-    public async Task UpdateUserAsync(CreateUserViewModel model)
+    public async Task UpdateUserAsync(EditUserViewModel model)
     {
         var user = await _userRepository.GetByIdAsync(model.Id);
-        var existingUser = await _userRepository.GetByEmailAsync(model.Email);
-        if (existingUser != null)
-        {
-            throw new InvalidOperationException("Email is already in use.");
-        }
         if (user == null)
         {
             throw new InvalidOperationException("User not found.");
         }
+        
+        if (user.Email != model.Email)
+        {
+            var existingUser = await _userRepository.GetByEmailAsync(model.Email);
+            if (existingUser != null && existingUser.Id != model.Id)
+            {
+                throw new InvalidOperationException("Email is already in use.");
+            }
+            user.Email = model.Email;
+        }
 
         user.Name = model.Name;
+        user.Role = model.Role;
         await _userRepository.UpdateAsync(user);
     }
 

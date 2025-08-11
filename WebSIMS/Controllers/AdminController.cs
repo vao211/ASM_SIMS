@@ -122,12 +122,12 @@ public class AdminController : Controller
             return NotFound();
         }
 
-        var model = ViewModelFactory.CreateCreateUserViewModel(user);
+        var model = ViewModelFactory.CreateEditUserViewModel(user);
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditUser(CreateUserViewModel model)
+    public async Task<IActionResult> EditUser(EditUserViewModel model)
     {
         if (!ModelState.IsValid)
         {

@@ -19,6 +19,16 @@ public static class ViewModelFactory
         };
     }
 
+    public static EditUserViewModel CreateEditUserViewModel(Users users)
+    {
+        return new EditUserViewModel
+        {
+            Id = users.Id,
+            Name = users.Name,
+            Email = users.Email,
+            Role = users.Role
+        };
+    }
     public static CreateCourseViewModel CreateCreateCourseViewModel(Courses courses, List<SelectListItem> lecturerList)
     {
         return new CreateCourseViewModel
