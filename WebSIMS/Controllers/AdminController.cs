@@ -92,9 +92,16 @@ public class AdminController : Controller
     {
         if (ModelState.IsValid)
         {
-            await _adminService.CreateUserAsync(model);
-            TempData["Notification"] = "User created successfully";
-            return RedirectToAction("CreateUser", "Admin");
+            try
+            {
+                await _adminService.CreateUserAsync(model);
+                TempData["Notification"] = "User created successfully";
+                return RedirectToAction("CreateUser", "Admin");
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError("", ex.Message); 
+            }
         }
         return View(model);
     }

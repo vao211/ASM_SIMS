@@ -30,12 +30,23 @@ public class AdminService
     
     public async Task<CreateUserViewModel> CreateUserAsync(CreateUserViewModel model)
     {
+        var existingUser = await _userRepository.GetByEmailAsync(model.Email);
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException("Email is already in use.");
+        }
+
         var user = await _authenService.CreateUserAsync(model);
         return ViewModelFactory.CreateCreateUserViewModel(user);
     }
     public async Task UpdateUserAsync(CreateUserViewModel model)
     {
         var user = await _userRepository.GetByIdAsync(model.Id);
+        var existingUser = await _userRepository.GetByEmailAsync(model.Email);
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException("Email is already in use.");
+        }
         if (user == null)
         {
             throw new InvalidOperationException("User not found.");
