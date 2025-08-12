@@ -338,7 +338,16 @@ public class AdminService
     }
     
     
-    
+    public async Task<List<StudentInfor>> GetAllStudentInforAsync()
+    {
+        return await _studentInforRepository.GetAllAsync();
+    }
+
+    public async Task<List<LecturerInfor>> GetAllLecturerInforAsync()
+    {
+        return await _lecturerInforRepository.GetAllAsync();
+    }
+
     
     public async Task<List<Users>> GetUnassignedUsersByRoleAsync(string role)
     {

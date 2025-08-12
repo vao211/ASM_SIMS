@@ -466,7 +466,22 @@ public class AdminController : Controller
             return View(model);
         }
     }
-
+    
+    [HttpPost]
+    public async Task<IActionResult> ManagerDeleteUserInfor(int id, string role)
+    {
+        try
+        {
+            await _adminService.DeleteUserInforAsync(id, role);
+            TempData["Notification"] = $"{role} information deleted successfully.";
+            return Json(new { success = true });
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
     [HttpPost]
     public async Task<IActionResult> DeleteUserInfor(EditUserInforViewModel model)
     {
@@ -560,5 +575,53 @@ public class AdminController : Controller
             model.UserList = new SelectList(await _adminService.GetUnassignedUsersByRoleAsync(model.Role), "Id", "Name");
             return View(model);
         }
+    }
+    
+    [HttpGet]
+    public IActionResult InforManager()
+    {
+        var model = new InforManagerViewModel
+        {
+            RoleList = new SelectList(new[]
+            {
+                new { Value = "Student", Text = "Student" },
+                new { Value = "Lecturer", Text = "Lecturer" }
+            }, "Value", "Text")
+        };
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<JsonResult> GetInforListByRole(string role)
+    {
+        if (role == "Student")
+        {
+            var students = await _adminService.GetAllStudentInforAsync();
+            return Json(students.Select(s => new
+            {
+                Id = s.StudentInfoId,
+                Name = s.Name,
+                JoinDate = s.JoinDate.ToString("yyyy-MM-dd"),
+                BirthDate = s.BirthDate.ToString("yyyy-MM-dd"),
+                CodeId = s.StudentId,
+                PhoneNumber = s.PhoneNumber,
+                UserId = s.UserId.HasValue ? s.UserId.ToString() : "Chưa gán"
+            }));
+        }
+        else if (role == "Lecturer")
+        {
+            var lecturers = await _adminService.GetAllLecturerInforAsync();
+            return Json(lecturers.Select(l => new
+            {
+                Id = l.LecturerInfoId,
+                Name = l.Name,
+                JoinDate = l.JoinDate.ToString("yyyy-MM-dd"),
+                BirthDate = l.BirthDate.ToString("yyyy-MM-dd"),
+                CodeId = l.LecturerId,
+                PhoneNumber = l.PhoneNumber,
+                UserId = l.UserId.HasValue ? l.UserId.ToString() : "Chưa gán"
+            }));
+        }
+        return Json(new List<object>());
     }
 }
