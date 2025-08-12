@@ -54,7 +54,6 @@ public class AdminController : Controller
         {
             return NotFound();
         }
-        var userEmail = student.Email;
         var enrollments = await _adminService.GetEnrollmentsByStudentId(id);
         var model = new StudentViewModel
         {
@@ -70,7 +69,7 @@ public class AdminController : Controller
     [HttpGet]
     public async Task<IActionResult> ViewLecturer(int id)
     {
-        var lecturer =  _adminService.GetAllUsersAsync().Result.FirstOrDefault(u=>u.Id == id);
+        var lecturer =  _adminService.GetAllUsersAsync().Result.FirstOrDefault(u => u.Id == id);
         if (lecturer == null || lecturer.Role != "Lecturer")
         {
             return NotFound();
@@ -105,11 +104,28 @@ public class AdminController : Controller
         }
         return View(model);
     }
+    
     [HttpGet]
     public async Task<IActionResult> UserManager()
     {
         var users = await _adminService.GetAllUsersAsync();
         var model = users.Select(u => ViewModelFactory.CreateCreateUserViewModel(u)).ToList();
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> StudentManager()
+    {
+        var students = await _adminService.GetAllStudentsAsync();
+        var model = students.Select(s => ViewModelFactory.CreateCreateUserViewModel(s)).ToList();
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LecturerManager()
+    {
+        var lecturers = await _adminService.GetAllLecturersAsync();
+        var model = lecturers.Select(l => ViewModelFactory.CreateCreateUserViewModel(l)).ToList();
         return View(model);
     }
 
@@ -161,16 +177,11 @@ public class AdminController : Controller
         }
         return RedirectToAction("UserManager");
     }
+
     [HttpGet]
     public async Task<IActionResult> CreateCourse()
     {
         var lecturerList = await _adminService.GetAllLecturersAsync();
-        Console.WriteLine($"found {lecturerList.Count} lecturers");
-        foreach (var lecturer in lecturerList)
-        {
-            Console.WriteLine($"Lecturer {lecturer.Id}, Name: {lecturer.Name} ");
-        }
-        
         var lecturersSelectList = lecturerList.Select(lecturer => new SelectListItem
         {
             Value = lecturer.Id.ToString(),
@@ -184,13 +195,9 @@ public class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateCourse(CreateCourseViewModel model)
     {
-        Console.WriteLine($"Form data received: Name={model.Name ?? "null"}, InstructorId={model.LecturerId}");
-        
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-            Console.WriteLine("ModelState invalid: " + string.Join(", ", errors));
-            //dropbox
             model.lecturersList = (await _adminService.GetAllLecturersAsync()).Select(i => new SelectListItem
             {
                 Value = i.Id.ToString(),
@@ -213,6 +220,7 @@ public class AdminController : Controller
         var model = ViewModelFactory.CreateAssignStudentToCourseViewModel(studentList, courseList);
         return View(model);
     }
+
     [HttpPost]
     public async Task<IActionResult> AssignStudentToCourse(AssignStudentToCourseViewModel model)
     {
@@ -247,7 +255,7 @@ public class AdminController : Controller
             model.StudentsList = students.Select(s => new SelectListItem
             {
                 Value = s.Id.ToString(),
-                Text = s.Name
+            Text = s.Name
             }).ToList();
             model.CoursesList = courses.Select(c => new SelectListItem
             {
@@ -287,6 +295,20 @@ public class AdminController : Controller
         return RedirectToAction("CourseManager");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> DeleteCourse(int id)
+    {
+        try
+        {
+            await _adminService.DeleteCourseAsync(id);
+            TempData["Notification"] = "Course deleted successfully.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+        return RedirectToAction("CourseManager");
+    }
 
     [HttpGet]
     public async Task<IActionResult> EditCourse(int id)
@@ -340,19 +362,138 @@ public class AdminController : Controller
         }
     }
     
+    
+    [HttpGet]
+    public async Task<IActionResult> CreateUserInfor()
+    {
+        var users = await _adminService.GetAllUsersAsync();
+        var model = new CreateUserInforViewModel
+        {
+            UsersList = new SelectList(users, "Id", "Name"),
+            RoleList = new SelectList(new[]
+            {
+                new { Value = "Student", Text = "Student" },
+                new { Value = "Lecturer", Text = "Lecturer" }
+            }, "Value", "Text")
+        };
+        return View(model);
+    }
+
     [HttpPost]
-    public async Task<IActionResult> DeleteCourse(int id)
+    public async Task<IActionResult> CreateUserInfor(CreateUserInforViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            var users = await _adminService.GetAllUsersAsync();
+            model.UsersList = new SelectList(users, "Id", "Name");
+            model.RoleList = new SelectList(new[]
+            {
+                new { Value = "Student", Text = "Student" },
+                new { Value = "Lecturer", Text = "Lecturer" }
+            }, "Value", "Text");
+            return View(model);
+        }
+
+        try
+        {
+            await _adminService.CreateUserInforAsync(model);
+            TempData["Notification"] = $"{model.Role} information created successfully.";
+            return RedirectToAction("CreateUserInfor");
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            var users = await _adminService.GetAllUsersAsync();
+            model.UsersList = new SelectList(users, "Id", "Name");
+            model.RoleList = new SelectList(new[]
+            {
+                new { Value = "Student", Text = "Student" },
+                new { Value = "Lecturer", Text = "Lecturer" }
+            }, "Value", "Text");
+            return View(model);
+        }
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> EditUserInfor()
+    {
+        var users = await _adminService.GetAllUsersAsync();
+        var model = new EditUserInforViewModel
+        {
+            UsersList = new SelectList(users, "Id", "Name"),
+            RoleList = new SelectList(new[]
+            {
+                new { Value = "Student", Text = "Student" },
+                new { Value = "Lecturer", Text = "Lecturer" }
+            }, "Value", "Text")
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditUserInfor(EditUserInforViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            var users = await _adminService.GetAllUsersAsync();
+            model.UsersList = new SelectList(users, "Id", "Name");
+            model.RoleList = new SelectList(new[]
+            {
+                new { Value = "Student", Text = "Student" },
+                new { Value = "Lecturer", Text = "Lecturer" }
+            }, "Value", "Text");
+            model.InforList = new SelectList(await _adminService.GetInforListByRoleAsync(model.Role), "Id", "Name");
+            return View(model);
+        }
+
+        try
+        {
+            await _adminService.UpdateUserInforAsync(model);
+            TempData["Notification"] = $"{model.Role} information updated successfully.";
+            return RedirectToAction("EditUserInfor");
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            var users = await _adminService.GetAllUsersAsync();
+            model.UsersList = new SelectList(users, "Id", "Name");
+            model.RoleList = new SelectList(new[]
+            {
+                new { Value = "Student", Text = "Student" },
+                new { Value = "Lecturer", Text = "Lecturer" }
+            }, "Value", "Text");
+            model.InforList = new SelectList(await _adminService.GetInforListByRoleAsync(model.Role), "Id", "Name");
+            return View(model);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteUserInfor(EditUserInforViewModel model)
     {
         try
         {
-            await _adminService.DeleteCourseAsync(id);
-            TempData["Notification"] = "Course deleted successfully.";
+            await _adminService.DeleteUserInforAsync(model.InforId, model.Role);
+            TempData["Notification"] = $"{model.Role} information deleted successfully.";
+            return RedirectToAction("EditUserInfor");
         }
         catch (InvalidOperationException ex)
         {
             TempData["Error"] = ex.Message;
+            return RedirectToAction("EditUserInfor");
         }
-        return RedirectToAction("CourseManager");
     }
-    
+
+    [HttpGet]
+    public async Task<JsonResult> GetInforList(string role)
+    {
+        var inforList = await _adminService.GetInforListByRoleAsync(role);
+        return Json(inforList.Select(i => new { Id = i.Id, Name = i.Name }));
+    }
+
+    [HttpGet]
+    public async Task<JsonResult> GetInforDetails(int id, string role)
+    {
+        var details = await _adminService.GetInforDetailsAsync(id, role);
+        return Json(details);
+    }
 }

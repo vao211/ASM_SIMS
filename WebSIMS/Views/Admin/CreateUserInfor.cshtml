@@ -1,0 +1,77 @@
+﻿@model WebSIMS.Models.ViewModels.CreateUserInforViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Create User Information";
+}
+
+<h2>Create User Information</h2>
+
+@if (TempData["Notification"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Notification"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<form asp-action="CreateUserInfor" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Role" class="control-label"></label>
+        <select asp-for="Role" asp-items="Model.RoleList" class="form-control">
+            <option value="">Select Role</option>
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="JoinDate" class="control-label"></label>
+        <input asp-for="JoinDate" class="form-control" type="date" value="@Model.JoinDate.ToString("yyyy-MM-dd")" />
+        <span asp-validation-for="JoinDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="BirthDate" class="control-label"></label>
+        <input asp-for="BirthDate" class="form-control" type="date" value="@Model.BirthDate.ToString("yyyy-MM-dd")" />
+        <span asp-validation-for="BirthDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="CodeId" class="control-label"></label>
+        <input asp-for="CodeId" class="form-control" placeholder="Enter Student ID or Lecturer ID" />
+        <span asp-validation-for="CodeId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="PhoneNumber" class="control-label"></label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="UserId" class="control-label"></label>
+        <select asp-for="UserId" asp-items="Model.UsersList" class="form-control">
+            <option value="">Select User (Optional)</option>
+        </select>
+        <span asp-validation-for="UserId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>

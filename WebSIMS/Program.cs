@@ -39,6 +39,8 @@ public class Program
         builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         builder.Services.AddScoped<IAuthenService, AuthenService>();
         builder.Services.AddScoped<ICookiesService, CookiesService>();
+        builder.Services.AddScoped<IStudentInforRepository, StudentInforRepository>();
+        builder.Services.AddScoped<ILecturerInforRepository, LecturerInforRepository>();
         builder.Services.AddScoped<AdminService>();
         builder.Services.AddScoped<StudentService>();
         builder.Services.AddScoped<LecturerService>();

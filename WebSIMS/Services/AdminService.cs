@@ -13,14 +13,19 @@ public class AdminService
     private readonly ICourseRepository _courseRepository;
     private readonly IEnrollmentRepository _enrollmentRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IStudentInforRepository _studentInforRepository;
+    private readonly ILecturerInforRepository _lecturerInforRepository;
 
     public AdminService(IAuthenService authenService, ICourseRepository courseRepository,
-        IEnrollmentRepository enrollmentRepository, IUserRepository userRepository)
+        IEnrollmentRepository enrollmentRepository, IUserRepository userRepository,
+        IStudentInforRepository studentInforRepository,  ILecturerInforRepository lecturerInforRepository)
     {
         _authenService = authenService;
         _courseRepository = courseRepository;
         _enrollmentRepository = enrollmentRepository;
         _userRepository = userRepository;
+        _studentInforRepository = studentInforRepository;
+        _lecturerInforRepository = lecturerInforRepository;
     }
 
     public async Task<List<Courses>> GetAllCoursesAsync()
@@ -163,5 +168,172 @@ public class AdminService
     public async Task<List<Courses>> GetCoursesByLecturerAsync(int lecturerId)
     {
         return await _courseRepository.GetCoursesByLecturerAsync(lecturerId);
+    }
+    
+    public async Task CreateUserInforAsync(CreateUserInforViewModel model)
+    {
+        if (model.Role != "Student" && model.Role != "Lecturer")
+        {
+            throw new InvalidOperationException("Invalid role selected.");
+        }
+
+        if (model.UserId.HasValue)
+        {
+            var user = await _userRepository.GetByIdAsync(model.UserId.Value);
+            if (user == null)
+            {
+                throw new InvalidOperationException("Selected user does not exist.");
+            }
+            if (user.Role != model.Role)
+            {
+                throw new InvalidOperationException($"Selected user role ({user.Role}) does not match the selected information type ({model.Role}).");
+            }
+        }
+
+        if (model.Role == "Student")
+        {
+            var existingStudentInfor = await _studentInforRepository.GetByStudentIdAsync(model.CodeId);
+            if (existingStudentInfor != null)
+            {
+                throw new InvalidOperationException("Student ID is already in use.");
+            }
+
+            var studentInfor = new StudentInfor
+            {
+                Name = model.Name,
+                JoinDate = model.JoinDate,
+                BirthDate = model.BirthDate,
+                StudentId = model.CodeId,
+                PhoneNumber = model.PhoneNumber,
+                UserId = model.UserId
+            };
+            await _studentInforRepository.AddAsync(studentInfor);
+        }
+        else // Lecturer
+        {
+            var existingLecturerInfor = await _lecturerInforRepository.GetByLecturerIdAsync(model.CodeId);
+            if (existingLecturerInfor != null)
+            {
+                throw new InvalidOperationException("Lecturer ID is already in use.");
+            }
+
+            var lecturerInfor = new LecturerInfor
+            {
+                Name = model.Name,
+                JoinDate = model.JoinDate,
+                BirthDate = model.BirthDate,
+                LecturerId = model.CodeId,
+                PhoneNumber = model.PhoneNumber,
+                UserId = model.UserId
+            };
+            await _lecturerInforRepository.AddAsync(lecturerInfor);
+        }
+    }
+    
+    
+     public async Task<List<InforListItem>> GetInforListByRoleAsync(string role)
+    {
+        if (role == "Student")
+        {
+            var students = await _studentInforRepository.GetAllAsync();
+            return students.Select(s => new InforListItem { Id = s.StudentInfoId, Name = s.Name }).ToList();
+        }
+        else if (role == "Lecturer")
+        {
+            var lecturers = await _lecturerInforRepository.GetAllAsync();
+            return lecturers.Select(l => new InforListItem { Id = l.LecturerInfoId, Name = l.Name }).ToList();
+        }
+        throw new InvalidOperationException("Invalid role.");
+    }
+
+    public async Task<object> GetInforDetailsAsync(int id, string role)
+    {
+        if (role == "Student")
+        {
+            var student = await _studentInforRepository.GetByIdAsync(id);
+            if (student == null) throw new InvalidOperationException("Student information not found.");
+            return new
+            {
+                Name = student.Name,
+                JoinDate = student.JoinDate,
+                BirthDate = student.BirthDate,
+                CodeId = student.StudentId,
+                PhoneNumber = student.PhoneNumber,
+                UserId = student.UserId
+            };
+        }
+        else if (role == "Lecturer")
+        {
+            var lecturer = await _lecturerInforRepository.GetByIdAsync(id);
+            if (lecturer == null) throw new InvalidOperationException("Lecturer information not found.");
+            return new
+            {
+                Name = lecturer.Name,
+                JoinDate = lecturer.JoinDate,
+                BirthDate = lecturer.BirthDate,
+                CodeId = lecturer.LecturerId,
+                PhoneNumber = lecturer.PhoneNumber,
+                UserId = lecturer.UserId
+            };
+        }
+        throw new InvalidOperationException("Invalid role.");
+    }
+
+    public async Task UpdateUserInforAsync(EditUserInforViewModel model)
+    {
+        if (model.Role == "Student")
+        {
+            var student = await _studentInforRepository.GetByIdAsync(model.InforId);
+            if (student == null) throw new InvalidOperationException("Student information not found.");
+
+            var existingCode = await _studentInforRepository.GetByStudentIdAsync(model.CodeId);
+            if (existingCode != null && existingCode.StudentInfoId != model.InforId)
+                throw new InvalidOperationException("Student ID is already in use.");
+
+            student.Name = model.Name;
+            student.JoinDate = model.JoinDate;
+            student.BirthDate = model.BirthDate;
+            student.StudentId = model.CodeId;
+            student.PhoneNumber = model.PhoneNumber;
+            student.UserId = model.UserId;
+            await _studentInforRepository.UpdateAsync(student);
+        }
+        else if (model.Role == "Lecturer")
+        {
+            var lecturer = await _lecturerInforRepository.GetByIdAsync(model.InforId);
+            if (lecturer == null) throw new InvalidOperationException("Lecturer information not found.");
+
+            var existingCode = await _lecturerInforRepository.GetByLecturerIdAsync(model.CodeId);
+            if (existingCode != null && existingCode.LecturerInfoId != model.InforId)
+                throw new InvalidOperationException("Lecturer ID is already in use.");
+
+            lecturer.Name = model.Name;
+            lecturer.JoinDate = model.JoinDate;
+            lecturer.BirthDate = model.BirthDate;
+            lecturer.LecturerId = model.CodeId;
+            lecturer.PhoneNumber = model.PhoneNumber;
+            lecturer.UserId = model.UserId;
+            await _lecturerInforRepository.UpdateAsync(lecturer);
+        }
+        else
+        {
+            throw new InvalidOperationException("Invalid role.");
+        }
+    }
+
+    public async Task DeleteUserInforAsync(int id, string role)
+    {
+        if (role == "Student")
+        {
+            await _studentInforRepository.DeleteAsync(id);
+        }
+        else if (role == "Lecturer")
+        {
+            await _lecturerInforRepository.DeleteAsync(id);
+        }
+        else
+        {
+            throw new InvalidOperationException("Invalid role.");
+        }
     }
 }

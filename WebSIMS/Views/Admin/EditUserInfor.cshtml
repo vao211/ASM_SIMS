@@ -1,0 +1,208 @@
+﻿@model WebSIMS.Models.ViewModels.EditUserInforViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+ViewData["Title"] = "Edit User Information";
+Layout = "_Layout";
+}
+
+<h2>Edit User Information</h2>
+
+@if (TempData["Notification"] != null)
+{
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    @TempData["Notification"]
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+}
+
+@if (TempData["Error"] != null)
+{
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    @TempData["Error"]
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+}
+
+<form asp-action="EditUserInfor" method="post">
+    <input type="hidden" asp-for="InforId" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Role" class="control-label"></label>
+        <select asp-for="Role" asp-items="Model.RoleList" class="form-control" id="roleSelect">
+            <option value="">Select Role</option>
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="inforSelect" class="control-label">Select Name</label>
+        <select id="inforSelect" class="form-control">
+            <option value="">Select Name</option>
+        </select>
+        <span class="text-danger" id="inforSelectError"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="JoinDate" class="control-label"></label>
+        <input asp-for="JoinDate" class="form-control" type="date" value="@Model.JoinDate.ToString("yyyy-MM-dd")" />
+        <span asp-validation-for="JoinDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="BirthDate" class="control-label"></label>
+        <input asp-for="BirthDate" class="form-control" type="date" value="@Model.BirthDate.ToString("yyyy-MM-dd")" />
+        <span asp-validation-for="BirthDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="CodeId" class="control-label"></label>
+        <input asp-for="CodeId" class="form-control" />
+        <span asp-validation-for="CodeId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="PhoneNumber" class="control-label"></label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="UserId" class="control-label"></label>
+        <select asp-for="UserId" asp-items="Model.UsersList" class="form-control">
+            <option value="">Select User (Optional)</option>
+        </select>
+        <span asp-validation-for="UserId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <input type="submit" value="Update" class="btn btn-primary" />
+        <button type="button" id="deleteButton" class="btn btn-danger">Delete</button>
+    </div>
+</form>
+
+@section Scripts {
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/additional-methods.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Xử lý change role
+        $('#roleSelect').change(function () {
+            var role = $(this).val();
+            $('#inforSelectError').text('');
+            if (role) {
+                $.getJSON('/Admin/GetInforList', { role: role })
+                    .done(function (data) {
+                        var inforSelect = $('#inforSelect');
+                        inforSelect.empty();
+                        inforSelect.append('<option value="">Select Name</option>');
+                        $.each(data, function (index, item) {
+                            inforSelect.append('<option value="' + item.id + '">' + item.name + '</option>');
+                        });
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        console.error("Error loading info list:", textStatus, errorThrown);
+                        $('#inforSelectError').text("Failed to load names. Please try again.");
+                    });
+            } else {
+                $('#inforSelect').empty().append('<option value="">Select Name</option>');
+            }
+        });
+
+        // Xử lý change info
+        $('#inforSelect').change(function () {
+            var id = $(this).val();
+            var role = $('#roleSelect').val();
+            $('#inforSelectError').text('');
+            if (id && role) {
+                $.getJSON('/Admin/GetInforDetails', { id: id, role: role })
+                    .done(function (data) {
+                        $('#InforId').val(id);
+                        $('#Name').val(data.name);
+                        $('#JoinDate').val(data.joinDate.split('T')[0]);
+                        $('#BirthDate').val(data.birthDate.split('T')[0]);
+                        $('#CodeId').val(data.codeId);
+                        $('#PhoneNumber').val(data.phoneNumber || '');
+                        $('#UserId').val(data.userId || '');
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        console.error("Error loading details:", textStatus, errorThrown);
+                        $('#inforSelectError').text("Failed to load details. Please try again.");
+                    });
+            }
+        });
+
+        // Xử lý delete
+        $('#deleteButton').click(function () {
+            var inforId = $('#InforId').val();
+            if (!inforId) {
+                $('#inforSelectError').text("Please select a name to delete.");
+                return;
+            }
+            if (confirm('Are you sure you want to delete this information?')) {
+                var form = $('form');
+                form.attr('action', '/Admin/DeleteUserInfor');
+                form.submit();
+            }
+        });
+
+        // Validation phía client
+        $('form').validate({
+            rules: {
+                Role: { required: true },
+                Name: { required: true, maxlength: 255 },
+                JoinDate: {
+                    required: true,
+                    date: true,
+                    max: new Date().toISOString().split('T')[0]
+                },
+                BirthDate: {
+                    required: true,
+                    date: true,
+                    max: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0],
+                    maxAge: 17
+                },
+                CodeId: { required: true, maxlength: 50 },
+                PhoneNumber: { maxlength: 20 }
+            },
+            messages: {
+                Role: { required: "Please select a role." },
+                Name: { required: "Please enter a name.", maxlength: "Name cannot exceed 255 characters." },
+                JoinDate: {
+                    required: "Please select a join date.",
+                    max: "Join date cannot be in the future."
+                },
+                BirthDate: {
+                    required: "Please select a birth date.",
+                    max: "Birth date cannot be today or in the future.",
+                    maxAge: "User must be at least 17 years old."
+                },
+                CodeId: { required: "Please enter a Student ID or Lecturer ID.", maxlength: "ID cannot exceed 50 characters." },
+                PhoneNumber: { maxlength: "Phone number cannot exceed 20 characters." }
+            }
+        });
+
+        // Custom validation method cho độ tuổi tối thiểu
+        $.validator.addMethod("maxAge", function(value, element, param) {
+            var birthDate = new Date(value);
+            var today = new Date();
+            var age = today.getFullYear() - birthDate.getFullYear();
+            var monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age >= param;
+        });
+    });
+</script>
+}
