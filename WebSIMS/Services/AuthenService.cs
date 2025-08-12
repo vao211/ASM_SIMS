@@ -1,6 +1,7 @@
 ﻿using WebSIMS.Models.Entities;
 using WebSIMS.Models.ViewModels;
 using WebSIMS.Repository;
+using WebSIMS.Repository.Interfaces;
 using WebSIMS.Services.Interfaces;
 
 namespace WebSIMS.Services;
@@ -35,5 +36,9 @@ public class AuthenService : IAuthenService
         };
         await _userRepository.AddAsync(user);
         return user;
+    }
+    public async Task<List<Users>> GetUnassignedUsersByRoleAsync(string role)
+    {
+        return await _userRepository.GetUnassignedUsersByRoleAsync(role);
     }
 }

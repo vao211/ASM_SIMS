@@ -496,4 +496,69 @@ public class AdminController : Controller
         var details = await _adminService.GetInforDetailsAsync(id, role);
         return Json(details);
     }
+    
+    
+    
+    [HttpGet]
+    public async Task<JsonResult> GetUnassignedUsers(string role)
+    {
+        var users = await _adminService.GetUnassignedUsersByRoleAsync(role);
+        return Json(users.Select(u => new { Id = u.Id, Name = u.Name }));
+    }
+    
+    [HttpGet]
+    public async Task<JsonResult> GetUserDetails(int id)
+    {
+        var details = await _adminService.GetUserDetailsAsync(id);
+        return Json(details);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> AssignUserInfor()
+    {
+        var model = new AssignUserInforViewModel
+        {
+            RoleList = new SelectList(new[]
+            {
+                new { Value = "Student", Text = "Student" },
+                new { Value = "Lecturer", Text = "Lecturer" }
+            }, "Value", "Text")
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AssignUserInfor(AssignUserInforViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            model.RoleList = new SelectList(new[]
+            {
+                new { Value = "Student", Text = "Student" },
+                new { Value = "Lecturer", Text = "Lecturer" }
+            }, "Value", "Text");
+            model.InforList = new SelectList(await _adminService.GetInforListByRoleAsync(model.Role), "Id", "Name");
+            model.UserList = new SelectList(await _adminService.GetUnassignedUsersByRoleAsync(model.Role), "Id", "Name");
+            return View(model);
+        }
+
+        try
+        {
+            await _adminService.AssignUserInforAsync(model);
+            TempData["Notification"] = $"User assigned to {model.Role} successfully.";
+            return RedirectToAction("AssignUserInfor");
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            model.RoleList = new SelectList(new[]
+            {
+                new { Value = "Student", Text = "Student" },
+                new { Value = "Lecturer", Text = "Lecturer" }
+            }, "Value", "Text");
+            model.InforList = new SelectList(await _adminService.GetInforListByRoleAsync(model.Role), "Id", "Name");
+            model.UserList = new SelectList(await _adminService.GetUnassignedUsersByRoleAsync(model.Role), "Id", "Name");
+            return View(model);
+        }
+    }
 }

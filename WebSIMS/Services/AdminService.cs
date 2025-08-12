@@ -336,4 +336,65 @@ public class AdminService
             throw new InvalidOperationException("Invalid role.");
         }
     }
+    
+    
+    
+    
+    public async Task<List<Users>> GetUnassignedUsersByRoleAsync(string role)
+    {
+        return await _userRepository.GetUnassignedUsersByRoleAsync(role);
+    }
+
+    public async Task AssignUserInforAsync(AssignUserInforViewModel model)
+    {
+        var user = await _userRepository.GetByIdAsync(model.UserId);
+        if (user == null)
+            throw new InvalidOperationException("User not found.");
+
+        if (user.Role != model.Role)
+            throw new InvalidOperationException($"User role ({user.Role}) does not match selected role ({model.Role}).");
+
+        if (model.Role == "Student")
+        {
+            var student = await _studentInforRepository.GetByIdAsync(model.InforId);
+            if (student == null)
+                throw new InvalidOperationException("Student information not found.");
+
+            if (student.UserId.HasValue)
+                throw new InvalidOperationException("Student is already assigned to a user.");
+
+            student.UserId = model.UserId;
+            await _studentInforRepository.UpdateAsync(student);
+        }
+        else if (model.Role == "Lecturer")
+        {
+            var lecturer = await _lecturerInforRepository.GetByIdAsync(model.InforId);
+            if (lecturer == null)
+                throw new InvalidOperationException("Lecturer information not found.");
+
+            if (lecturer.UserId.HasValue)
+                throw new InvalidOperationException("Lecturer is already assigned to a user.");
+
+            lecturer.UserId = model.UserId;
+            await _lecturerInforRepository.UpdateAsync(lecturer);
+        }
+        else
+        {
+            throw new InvalidOperationException("Invalid role.");
+        }
+    }
+
+    public async Task<object> GetUserDetailsAsync(int id)
+    {
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null)
+            throw new InvalidOperationException("User not found.");
+
+        return new
+        {
+            Name = user.Name,
+            Email = user.Email,
+            Role = user.Role
+        };
+    }
 }
