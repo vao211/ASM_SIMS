@@ -339,4 +339,20 @@ public class AdminController : Controller
             return View(model);
         }
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> DeleteCourse(int id)
+    {
+        try
+        {
+            await _adminService.DeleteCourseAsync(id);
+            TempData["Notification"] = "Course deleted successfully.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+        return RedirectToAction("CourseManager");
+    }
+    
 }

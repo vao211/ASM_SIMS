@@ -116,6 +116,23 @@ public class AdminService
         await _enrollmentRepository.AddAsync(enrollment);
     }
     
+    public async Task DeleteCourseAsync(int courseId)
+    {
+        var course = await _courseRepository.GetByIdAsync(courseId);
+        if (course == null)
+        {
+            throw new InvalidOperationException("Course not found.");
+        }
+
+        var enrollments = await _enrollmentRepository.GetEnrollmentsByCourseAsync(courseId);
+        if (enrollments.Any())
+        {
+            throw new InvalidOperationException("Cannot delete course with enrolled students.");
+        }
+
+        await _courseRepository.DeleteAsync(courseId);
+    }
+    
     public async Task RemoveStudentFromCourseAsync(int studentId, int courseId)
     {
         var enrollment = await _enrollmentRepository.GetEnrollmentAsync(studentId, courseId);

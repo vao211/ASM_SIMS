@@ -86,6 +86,14 @@
                                         <input type="hidden" name="id" value="@user.Id" />
                                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                     </form>
+                                    @if (user.Role == "Student")
+                                    {
+                                        <a href="@Url.Action("ViewStudent", "Admin", new { id = user.Id })" class="btn btn-primary btn-sm">View</a>
+                                    }
+                                    else if (user.Role == "Lecturer")
+                                    {
+                                        <a href="@Url.Action("ViewLecturer", "Admin", new { id = user.Id })" class="btn btn-primary btn-sm">View</a>
+                                    }
                                 </td>
                             </tr>
                         }

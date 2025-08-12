@@ -45,4 +45,15 @@ public class CourseService
         course.LecturerId = model.LecturerId;
         await _courseRepository.UpdateAsync(course);
     }
+    public async Task DeleteCourseAsync(int courseId)
+    {
+        var course = await _courseRepository.GetByIdAsync(courseId);
+        if (course == null)
+        {
+            throw new InvalidOperationException("Course not found.");
+        }
+
+        await _courseRepository.DeleteAsync(courseId);
+    }
+    
 }
