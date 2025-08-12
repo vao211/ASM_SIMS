@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using WebSIMS.Factory;
 using WebSIMS.Models.Entities;
 using WebSIMS.Models.ViewModels;
+using WebSIMS.Repository.Interfaces;
 using WebSIMS.Services;
 using WebSIMS.Services.Interfaces;
 
@@ -15,12 +16,18 @@ public class AdminController : Controller
     private readonly AdminService _adminService;
     private readonly CourseService _courseService;
     private readonly ICookiesService _cookieService;
+    private readonly IStudentInforRepository  _studentInforRepository;
+    private readonly ILecturerInforRepository _lecturerInforRepository;
     
-    public AdminController(AdminService adminService, CourseService courseService, ICookiesService cookieService)
+    public AdminController(AdminService adminService, CourseService courseService, 
+        ICookiesService cookieService,  IStudentInforRepository studentInforRepository,
+        ILecturerInforRepository lecturerInforRepository)
     {
         _adminService = adminService;
         _courseService = courseService;
         _cookieService = cookieService;
+        _studentInforRepository = studentInforRepository;
+        _lecturerInforRepository = lecturerInforRepository;
     }
     
     [HttpGet]
@@ -55,12 +62,21 @@ public class AdminController : Controller
             return NotFound();
         }
         var enrollments = await _adminService.GetEnrollmentsByStudentId(id);
+        
+        var studentInfo = await _studentInforRepository.GetAllAsync();
+        var studentInfor = studentInfo.FirstOrDefault(si => si.UserId == id);
+        
         var model = new StudentViewModel
         {
             Id = student.Id,
             Name = student.Name,
             Email = student.Email,
-            Enrollments = enrollments.Select(e => ViewModelFactory.CreateEnrollmentViewModel(e, e.Student.Name, e.Courses.Name)).ToList()
+            Enrollments = enrollments.Select(e => ViewModelFactory.CreateEnrollmentViewModel(e, e.Student.Name, e.Courses.Name)).ToList(),
+            StudentInfoName = studentInfor?.Name,
+            JoinDate = studentInfor?.JoinDate,
+            BirthDate = studentInfor?.BirthDate,
+            StudentId = studentInfor?.StudentId,
+            PhoneNumber = studentInfor?.PhoneNumber
         };
 
         return View(model);
@@ -69,14 +85,29 @@ public class AdminController : Controller
     [HttpGet]
     public async Task<IActionResult> ViewLecturer(int id)
     {
-        var lecturer =  _adminService.GetAllUsersAsync().Result.FirstOrDefault(u => u.Id == id);
+        var lecturer = _adminService.GetAllUsersAsync().Result.FirstOrDefault(u => u.Id == id);
         if (lecturer == null || lecturer.Role != "Lecturer")
         {
             return NotFound();
         }
 
         var courses = await _adminService.GetCoursesByLecturerAsync(id);
-        var model = ViewModelFactory.CreateLecturerViewModel(lecturer, courses);
+        var lecturerInfo = await _lecturerInforRepository.GetAllAsync();
+        var lecturerInfor = lecturerInfo.FirstOrDefault(li => li.UserId == id);
+
+        var model = new LecturerViewModel
+        {
+            Id = lecturer.Id,
+            Name = lecturer.Name,
+            Email = lecturer.Email,
+            Courses = courses.Select(c => ViewModelFactory.CreateCourseViewModel(c, c.Lecturer.Name)).ToList(),
+            LecturerInfoName = lecturerInfor?.Name,
+            JoinDate = lecturerInfor?.JoinDate,
+            BirthDate = lecturerInfor?.BirthDate,
+            LecturerId = lecturerInfor?.LecturerId,
+            PhoneNumber = lecturerInfor?.PhoneNumber
+        };
+
         return View(model);
     }
     

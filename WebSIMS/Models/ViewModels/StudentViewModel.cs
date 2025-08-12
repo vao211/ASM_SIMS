@@ -1,4 +1,6 @@
-﻿namespace WebSIMS.Models.ViewModels;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebSIMS.Models.ViewModels;
 
 public class StudentViewModel
 {
@@ -8,4 +10,13 @@ public class StudentViewModel
     public string Email { get; set; }
     
     public List<EnrollmentViewModel>? Enrollments { get; set; }
+    
+    //Student Infor
+    public string StudentInfoName { get; set; }
+    [DataType(DataType.Date)]
+    public DateTime? JoinDate { get; set; }
+    [DataType(DataType.Date)]
+    public DateTime? BirthDate { get; set; }
+    public string StudentId { get; set; }
+    public string PhoneNumber { get; set; }
 }

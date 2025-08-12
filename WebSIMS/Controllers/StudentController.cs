@@ -13,13 +13,16 @@ public class StudentController : Controller
 {
     private readonly IUserRepository _userRepository;
     private readonly IEnrollmentRepository _enrollmentRepository;
+    private readonly IStudentInforRepository _studentInforRepository;
     private readonly ICookiesService _cookieService;
 
-    public StudentController(IUserRepository userRepository, IEnrollmentRepository enrollmentRepository, ICookiesService cookieService)
+    public StudentController(IUserRepository userRepository, IEnrollmentRepository enrollmentRepository, 
+        ICookiesService cookieService,  IStudentInforRepository studentInforRepository)
     {
         _userRepository = userRepository;
         _enrollmentRepository = enrollmentRepository;
         _cookieService = cookieService;
+        _studentInforRepository = studentInforRepository;
     }
 
     [HttpGet]
@@ -34,12 +37,21 @@ public class StudentController : Controller
         }
 
         var enrollments = await _enrollmentRepository.GetEnrollmentsByStudentAsync(user.Id);
+        
+        var studentInfo = await _studentInforRepository.GetAllAsync();
+        var studentInfor = studentInfo.FirstOrDefault(si => si.UserId == user.Id);
         var model = new StudentViewModel
         {
             Id = user.Id,
             Name = user.Name,
             Email = user.Email,
-            Enrollments = enrollments.Select(e => ViewModelFactory.CreateEnrollmentViewModel(e, e.Student.Name, e.Courses.Name)).ToList()
+            Enrollments = enrollments.Select(e => ViewModelFactory.CreateEnrollmentViewModel(e, e.Student.Name, e.Courses.Name)).ToList(),
+            
+            StudentInfoName = studentInfor?.Name,
+            JoinDate = studentInfor?.JoinDate,
+            BirthDate = studentInfor?.BirthDate,
+            StudentId = studentInfor?.StudentId,
+            PhoneNumber = studentInfor?.PhoneNumber
         };
 
         return View(model);

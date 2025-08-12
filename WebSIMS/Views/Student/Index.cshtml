@@ -31,6 +31,31 @@
             <h2>Student Information</h2>
             <h3>Name: @Model.Name</h3>
             <p><strong>Email:</strong> @Model.Email</p>
+
+            <!-- Student Information Table -->
+            <h4>Student Details</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Join Date</th>
+                        <th>Birth Date</th>
+                        <th>Student ID</th>
+                        <th>Phone Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@(Model.StudentInfoName ?? "Not Assigned")</td>
+                        <td>@(Model.JoinDate.HasValue ? Model.JoinDate.Value.ToString("yyyy-MM-dd") : "Not Assigned")</td>
+                        <td>@(Model.BirthDate.HasValue ? Model.BirthDate.Value.ToString("yyyy-MM-dd") : "Not Assigned")</td>
+                        <td>@(Model.StudentId ?? "Not Assigned")</td>
+                        <td>@(Model.PhoneNumber ?? "Not Assigned")</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Academic Records Table -->
             <h4>Your Academic Records</h4>
             @if (Model.Enrollments != null && Model.Enrollments.Any())
             {
@@ -48,7 +73,7 @@
                             <tr>
                                 <td>@enrollment.CourseName</td>
                                 <td>@enrollment.LecturerName</td>
-                                <td>@(enrollment.Grade.HasValue? enrollment.Grade.Value.ToString("F2") : "Not Graded")</td>
+                                <td>@(enrollment.Grade.HasValue ? enrollment.Grade.Value.ToString("F2") : "Not Graded")</td>
                             </tr>
                         }
                     </tbody>
