@@ -37,7 +37,7 @@
                 @if (Model.Role == "Admin")
                 {
                     <li class="nav-item">
-                        <p class="nav-head-link">Your Courses</p>
+                        <p class="nav-head-link">Admin</p>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="@Url.Action("CreateCourse", "Admin")">Create Course</a>
@@ -57,11 +57,15 @@
                     <li class="nav-item">
                         <a class="nav-link" href="@Url.Action("ViewEnrollments", "Admin")">View Enrollments</a>
                     </li>
+                    @* <li class="nav-item"> *@
+                    @*     <a class="nav-link" href="@Url.Action("StudentManager", "Admin")">Student Manager</a> *@
+                    @* </li> *@
+                    @* <li class="nav-item"> *@
+                    @*     <a class="nav-link" href="@Url.Action("LecturerManager", "Admin")">Lecturer Manager</a> *@
+                    @* </li> *@
+                    <br>
                     <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("StudentManager", "Admin")">Student Manager</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("LecturerManager", "Admin")">Lecturer Manager</a>
+                        <p class="nav-head-link">User information</p>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="@Url.Action("CreateUserInfor", "Admin")">Create Student / Lecturer</a>
@@ -80,6 +84,9 @@
                 {
                     @if (Model.Courses != null && Model.Courses.Any())
                     {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Lecturer")">View your information</a>
+                        </li>
                         <li class="nav-item">
                             <p class="nav-head-link">Your Courses</p>
                         </li>

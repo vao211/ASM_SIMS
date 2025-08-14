@@ -5,6 +5,7 @@ using WebSIMS.Factory;
 using WebSIMS.Models.Entities;
 using WebSIMS.Models.ViewModels;
 using WebSIMS.Repository;
+using WebSIMS.Repository.Interfaces;
 using WebSIMS.Services;
 
 namespace WebSIMS.Controllers;
@@ -14,13 +15,55 @@ public class LecturerController : Controller
 {
     private readonly LecturerService _lecturerService;
     private readonly IEnrollmentRepository _enrollmentRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly ILecturerInforRepository _lecturerInforRepository;
 
-    public LecturerController(LecturerService lecturerService, IEnrollmentRepository enrollmentRepository)
+
+    public LecturerController(LecturerService lecturerService, IUserRepository userRepository,
+        IEnrollmentRepository enrollmentRepository,  ILecturerInforRepository lecturerInforRepository)
     {
         _lecturerService = lecturerService;
         _enrollmentRepository = enrollmentRepository;
+        _userRepository = userRepository;
+        _lecturerInforRepository = lecturerInforRepository;
+        
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        if (User?.Identity?.Name == null)
+        {
+            return RedirectToAction("Login", "Authen");
+        }
 
+        var lecturerEmail = User.Identity.Name;
+        var user = await _userRepository.GetByEmailAsync(lecturerEmail);
+        if (user == null || user.Role != "Lecturer")
+        {
+            return RedirectToAction("Login", "Authen");
+        }
+
+        var courses = await _lecturerService.GetCourseAsync(user.Id) ?? new List<CourseViewModel>();
+        var lecturerInfo = await _lecturerInforRepository.GetAllAsync() ?? new List<LecturerInfor>();
+        var lecturerInfor = lecturerInfo.FirstOrDefault(li => li.UserId == user.Id);
+
+        var model = new LecturerViewModel
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Courses = courses,
+            LecturerInfoName = lecturerInfor?.Name,
+            JoinDate = lecturerInfor?.JoinDate,
+            BirthDate = lecturerInfor?.BirthDate,
+            LecturerId = lecturerInfor?.LecturerId,
+            PhoneNumber = lecturerInfor?.PhoneNumber
+        };
+
+        return View(model);
+    }
+    
     [HttpGet]
     public async Task<IActionResult> ViewCoursesStudents(int courseId)
     {
