@@ -636,7 +636,7 @@ public class AdminController : Controller
                 BirthDate = s.BirthDate.ToString("yyyy-MM-dd"),
                 CodeId = s.StudentId,
                 PhoneNumber = s.PhoneNumber,
-                UserId = s.UserId.HasValue ? s.UserId.ToString() : "Chưa gán"
+                UserId = s.UserId.HasValue ? s.UserId.ToString() : "not assigned"
             }));
         }
         else if (role == "Lecturer")
@@ -650,7 +650,7 @@ public class AdminController : Controller
                 BirthDate = l.BirthDate.ToString("yyyy-MM-dd"),
                 CodeId = l.LecturerId,
                 PhoneNumber = l.PhoneNumber,
-                UserId = l.UserId.HasValue ? l.UserId.ToString() : "Chưa gán"
+                UserId = l.UserId.HasValue ? l.UserId.ToString() : "not assigned"
             }));
         }
         return Json(new List<object>());

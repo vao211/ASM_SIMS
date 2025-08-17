@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="~/css/lecture-student-info.css" />
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <div class="d-flex align-items-center">
@@ -24,15 +23,13 @@
             </div>
         </div>
     </nav>
-
-    <!-- Main Content -->
+    
     <div class="main-content">
         <div class="container">
             <h2>Student Information</h2>
             <h3>Name: @Model.Name</h3>
             <p><strong>Email:</strong> @Model.Email</p>
-
-            <!-- Student Information Table -->
+            
             <h4>Student Details</h4>
             <table class="table table-striped">
                 <thead>
@@ -54,8 +51,7 @@
                     </tr>
                 </tbody>
             </table>
-
-            <!-- Academic Records Table -->
+            
             <h4>Your Academic Records</h4>
             @if (Model.Enrollments != null && Model.Enrollments.Any())
             {

@@ -120,7 +120,7 @@ Layout = "_Layout";
             $('#userSelectError').text('');
             $('#Role').val(role);
             if (role) {
-                // Load Infor list
+                //Load Infor
                 $.getJSON('/Admin/GetInforList', { role: role })
                     .done(function (data) {
                         var inforSelect = $('#inforSelect');
@@ -135,7 +135,7 @@ Layout = "_Layout";
                         $('#inforSelectError').text("Failed to load names. Please try again.");
                     });
 
-                // Load User list
+                //Load User
                 $.getJSON('/Admin/GetUnassignedUsers', { role: role })
                     .done(function (data) {
                         var userSelect = $('#userSelect');
@@ -204,7 +204,7 @@ Layout = "_Layout";
             }
         });
 
-        // Xử lý Assign
+        //xử lý assing
         $('#assignButton').click(function (e) {
             var inforId = $('#InforId').val();
             var userId = $('#UserId').val();
@@ -213,8 +213,7 @@ Layout = "_Layout";
                 $('#inforSelectError').text("Please select both an information record and a user.");
             }
         });
-
-        // Hàm clear thông tin
+        
         function clearInforDetails() {
             $('#InforId').val('');
             $('#inforName').text('');
@@ -230,8 +229,7 @@ Layout = "_Layout";
             $('#userEmail').text('');
             $('#userRole').text('');
         }
-
-        // Validation phía client
+        
         $('form').validate({
             rules: {
                 Role: { required: true },
