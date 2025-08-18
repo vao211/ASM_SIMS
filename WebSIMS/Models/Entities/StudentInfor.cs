@@ -27,8 +27,8 @@ namespace WebSIMS.Models.Entities
         [StringLength(20)]
         public string? PhoneNumber { get; set; }
 
-        public int? UserId { get; set; } // Có thể null, không bắt buộc là khóa ngoại
+        public int? UserId { get; set; }
 
-        public Users? User { get; set; } // Navigation property (tùy chọn)
+        public Users? User { get; set; }
     }
 }

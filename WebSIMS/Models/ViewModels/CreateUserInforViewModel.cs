@@ -16,42 +16,42 @@ namespace WebSIMS.Models.ViewModels
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime BirthDate { get; set; } = DateTime.Today.AddYears(-18); // Mặc định 18 năm trước
+        public DateTime BirthDate { get; set; } = DateTime.Today.AddYears(-18);
 
         [Required]
         [StringLength(50)]
-        public string CodeId { get; set; } // StudentId hoặc LecturerId
+        public string CodeId { get; set; } //StudentId/LecturerId
 
         [StringLength(20)]
         public string? PhoneNumber { get; set; }
 
-        public int? UserId { get; set; } // Có thể null
+        public int? UserId { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string Role { get; set; } // "Student" hoặc "Lecturer"
+        [Required] [StringLength(50)] public string Role { get; set; }
 
-        public SelectList? UsersList { get; set; } // Dropdown cho UserId
-        public SelectList? RoleList { get; set; } // Dropdown cho Role
+        public SelectList? UsersList { get; set; }
+        public SelectList? RoleList { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            // Kiểm tra BirthDate không được là hôm nay hoặc tương lai
             if (BirthDate >= DateTime.Today)
             {
                 yield return new ValidationResult("Birth date cannot be today or in the future.", new[] { nameof(BirthDate) });
             }
 
-            // Kiểm tra độ tuổi tối thiểu là 17
             if (BirthDate > DateTime.Today.AddYears(-17))
             {
                 yield return new ValidationResult("User must be at least 17 years old.", new[] { nameof(BirthDate) });
             }
 
-            // Kiểm tra JoinDate không được là tương lai
             if (JoinDate > DateTime.Today)
             {
                 yield return new ValidationResult("Join date cannot be in the future.", new[] { nameof(JoinDate) });
+            }
+
+            if (PhoneNumber.Length != 10)
+            {
+                yield return new ValidationResult("Phone number must have 10 digits.", new[] { nameof(PhoneNumber) });
             }
         }
     }
